@@ -1,26 +1,368 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-app:       #FCFBF9;
+  --bg-panel:     #FFFFFF;
+  --bg-beige:     #F4F0E6;
+  --text-main:    #2C2B29;
+  --text-muted:   #94918C;
+  --ui-dark:      #3A3633;
+  --ui-orange:    #F69950;
+  --border-soft:  rgba(0,0,0,0.05);
+
+  --tag-red-bg:    #FCF1F0; --tag-red-txt:    #D16250;
+  --tag-yellow-bg: #FDF9EC; --tag-yellow-txt: #D89F3C;
+  --tag-purple-bg: #F6F0FA; --tag-purple-txt: #8E62CD;
+  --tag-blue-bg:   #EEF6FC; --tag-blue-txt:   #52A0D4;
+  --tag-green-bg:  #EFF9F2; --tag-green-txt:  #66B685;
+
+  --radius-card: 20px;
+  --radius-pill: 999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font-dm-sans, 'DM Sans', system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.font-serif {
+  font-family: var(--font-playfair, 'Playfair Display', Georgia, serif) !important;
+}
+
+/* Shared page header */
+.page-title {
+  font-family: var(--font-playfair, 'Playfair Display', Georgia, serif);
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin-bottom: 40px;
+}
+
+/* Primary button */
+.btn-primary {
+  background: var(--ui-dark);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Ghost button */
+.btn-ghost {
+  background: none;
+  border: 1px solid rgba(0,0,0,0.1);
+  color: var(--text-muted);
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { background: var(--bg-beige); color: var(--text-main); }
+
+/* Form inputs */
+.field-input {
+  width: 100%;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-main);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field-input:focus { border-color: var(--ui-dark); }
+.field-input:read-only { background: var(--bg-app); color: var(--text-muted); cursor: not-allowed; }
+
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+}
+
+.modal-panel {
+  background: var(--bg-panel);
+  border-radius: var(--radius-card);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.14);
+  width: 100%;
+  max-width: 460px;
+  padding: 32px;
+}
+
+/* Stat card */
+.stat-card {
+  background: var(--bg-panel);
+  border-radius: var(--radius-card);
+  padding: 24px 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+/* Hatch pattern for buffer / empty slots */
+.hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(148,145,140,0.15) 4px,
+    rgba(148,145,140,0.15) 5px
+  );
+}
+
+/* Category dot tag */
+.cat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d5d0c8; border-radius: 4px; }
+
+/* ── Mobile Responsive ─────────────────────────────── */
+
+/* Mobile header (hamburger) — hidden on desktop */
+.mobile-header {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  /* Sidebar slide-over */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 1000;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Close button inside sidebar on mobile */
+  .sidebar-close-btn {
+    display: flex !important;
+  }
+
+  /* Overlay behind sidebar */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+  }
+  .sidebar-overlay.visible {
+    display: block;
+  }
+
+  /* Main content — no left margin */
+  .app-main {
+    margin-left: 0 !important;
+    padding: 24px 16px !important;
+  }
+
+  /* Mobile header visible */
+  .mobile-header {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 16px 0;
+    margin-bottom: -8px;
+  }
+
+  /* Page titles */
+  .page-title {
+    font-size: 28px !important;
+  }
+  .page-subtitle {
+    font-size: 13px !important;
+  }
+
+  /* Dashboard KPI grid */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Dashboard main grid */
+  .main-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Dashboard bottom sub-grid (week bar + class mix) */
+  .dashboard-sub-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Schedule 7-col grid — horizontal scroll */
+  .week-grid {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .week-grid > div {
+    min-width: 160px;
+  }
+
+  /* Responsive tables */
+  .responsive-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .responsive-table table {
+    min-width: 600px;
+  }
+
+  /* Schedule header — stack on mobile */
+  .schedule-header {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Dashboard top header — stack on mobile */
+  .dashboard-header {
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Modal panel — full width on mobile */
+  .modal-panel {
+    max-width: calc(100vw - 32px);
+    margin: 16px;
+  }
+
+  /* Stat card — smaller padding on mobile */
+  .stat-card {
+    padding: 16px 18px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (min-width: 769px) {
+  .mobile-header {
+    display: none !important;
+  }
+  .sidebar-close-btn {
+    display: none !important;
+  }
+  .sidebar-overlay {
+    display: none !important;
+  }
+}
+
+/* ── Print Styles ─────────────────────────────────── */
+@media print {
+  /* Hide non-content elements */
+  .sidebar,
+  .sidebar-overlay,
+  .mobile-header,
+  nav,
+  button:not(.print-keep),
+  .no-print {
+    display: none !important;
+  }
+
+  /* Full width content */
+  .app-main {
+    margin-left: 0 !important;
+    padding: 20px !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Show print header */
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #333;
+  }
+  .print-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .print-header p {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+  }
+
+  /* Clean card backgrounds for print */
+  [style*="background: var(--bg-panel)"],
+  [style*="background: var(--bg-app)"] {
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure category badges print with color */
+  [style*="background: var(--tag-"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
