@@ -222,14 +222,14 @@ export default function DashboardPage() {
     <div style={{ width: "100%" }}>
 
       {/* ── TOP HEADER ───────────────────────────────────────────── */}
-      <div className="dashboard-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+      <div className="dashboard-header">
         <div>
           <p style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 500, marginBottom: 4 }}>{greeting}, {currentUser?.name ?? "there"}</p>
-          <h1 className="font-serif" style={{ fontSize: 40, fontWeight: 500, letterSpacing: "-0.02em" }}>Overview</h1>
+          <h1 className="font-serif dashboard-title" style={{ fontSize: 40, fontWeight: 500, letterSpacing: "-0.02em" }}>Overview</h1>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, paddingTop: 8 }}>
-          <div style={{ textAlign: "right" }}>
-            <p style={{ fontSize: 22, fontWeight: 600, color: "var(--text-main)", fontVariantNumeric: "tabular-nums" }}>{clock}</p>
+        <div className="dashboard-clock-row">
+          <div>
+            <p className="dashboard-clock" style={{ fontSize: 22, fontWeight: 600, color: "var(--text-main)", fontVariantNumeric: "tabular-nums" }}>{clock}</p>
             <p style={{ fontSize: 12, color: "var(--text-muted)" }}>{formatLongDate(today)}</p>
           </div>
           <button onClick={handleReseed} disabled={seeding} className="btn-ghost" style={{ fontSize: 12 }}>
@@ -239,7 +239,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── VIEW FILTER ──────────────────────────────────────────── */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 32, marginTop: 20 }}>
+      <div className="view-filter-bar" style={{ display: "flex", gap: 8, marginBottom: 32, marginTop: 20 }}>
         {(["today", "tomorrow", "week"] as ViewFilter[]).map(v => (
           <button key={v} onClick={() => setView(v)}
             style={{
@@ -293,7 +293,7 @@ export default function DashboardPage() {
                           {formatLongDate(slot.date).split(",")[0]} — {formatMonthDay(slot.date)}
                         </p>
                       )}
-                      <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 0", borderBottom: "1px solid var(--border-soft)" }}>
+                      <div className="slot-row" style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 0", borderBottom: "1px solid var(--border-soft)", flexWrap: "wrap" }}>
                         {/* Time */}
                         <div style={{ width: 52, flexShrink: 0, textAlign: "right" }}>
                           <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-muted)" }}>{slot.startTime}</p>
@@ -302,7 +302,7 @@ export default function DashboardPage() {
                         <div style={{ width: 3, height: 44, borderRadius: 2, background: cat.color, flexShrink: 0 }} />
                         {/* Class info */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
                             <p className="font-serif" style={{ fontSize: 16, fontWeight: 500, color: "var(--text-main)" }}>{slot.className}</p>
                             {flagged && <span style={{ fontSize: 10, background: "var(--tag-yellow-bg)", color: "var(--tag-yellow-txt)", fontWeight: 700, padding: "2px 6px", borderRadius: 4 }}>⚠️ BUFFER</span>}
                           </div>
@@ -311,9 +311,9 @@ export default function DashboardPage() {
                           </p>
                         </div>
                         {/* Category tag */}
-                        <span style={{ background: cat.bg, color: cat.color, fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: "var(--radius-pill)", flexShrink: 0 }}>{slot.categoryName}</span>
+                        <span className="slot-category-tag" style={{ background: cat.bg, color: cat.color, fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: "var(--radius-pill)" }}>{slot.categoryName}</span>
                         {/* Instructor pill */}
-                        <div style={{ background: "#fff", border: "1px solid var(--border-soft)", padding: "6px 14px", borderRadius: "var(--radius-pill)", fontSize: 13, fontWeight: 500, color: "var(--text-main)", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+                        <div className="slot-instructor-pill" style={{ background: "#fff", border: "1px solid var(--border-soft)", padding: "6px 14px", borderRadius: "var(--radius-pill)", fontSize: 13, fontWeight: 500, color: "var(--text-main)", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                           {slot.instructorName}
                         </div>
                       </div>

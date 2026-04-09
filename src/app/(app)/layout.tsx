@@ -7,6 +7,7 @@ import Sidebar from "@/components/Sidebar";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { currentUser, isLoading } = useAuth();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !currentUser) {
@@ -49,16 +50,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: "var(--bg-app)",
-      }}
-    >
+    <div className="app-shell" style={{ minHeight: "100vh", background: "var(--bg-app)" }}>
       {/* Mobile overlay */}
       <div
         className={`sidebar-overlay${sidebarOpen ? " visible" : ""}`}
@@ -95,7 +88,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main
         className="app-main"
         style={{
-          flex: 1,
           marginLeft: 260,
           padding: "48px 64px",
           minHeight: "100vh",

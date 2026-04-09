@@ -186,6 +186,23 @@ html, body {
   display: none !important;
 }
 
+/* ── Dashboard layout (all screens) ─────────────── */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+.dashboard-clock-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 8px;
+}
+.dashboard-clock-row > div:first-child {
+  text-align: right;
+}
+
 @media (max-width: 768px) {
   /* Sidebar slide-over */
   .sidebar {
@@ -217,7 +234,7 @@ html, body {
   /* Main content — no left margin */
   .app-main {
     margin-left: 0 !important;
-    padding: 24px 16px !important;
+    padding: 16px 14px !important;
   }
 
   /* Mobile header visible */
@@ -225,25 +242,69 @@ html, body {
     display: flex !important;
     align-items: center;
     gap: 12px;
-    padding: 16px 16px 0;
-    margin-bottom: -8px;
+    padding: 12px 14px 0;
+    margin-bottom: -4px;
   }
 
   /* Page titles */
   .page-title {
-    font-size: 28px !important;
+    font-size: 24px !important;
   }
   .page-subtitle {
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
 
-  /* Dashboard KPI grid */
+  /* ── Dashboard ─────────────────────────────────── */
+
+  /* Dashboard top header — stack vertically, left-align */
+  .dashboard-header {
+    flex-direction: column !important;
+    gap: 4px !important;
+    align-items: flex-start !important;
+  }
+  .dashboard-title {
+    font-size: 28px !important;
+  }
+  .dashboard-clock-row {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 4px !important;
+  }
+  .dashboard-clock-row > div:first-child {
+    text-align: left !important;
+  }
+  .dashboard-clock {
+    font-size: 18px !important;
+  }
+
+  /* Dashboard KPI grid — 2 columns, no overflow */
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
+    gap: 8px !important;
+    overflow: hidden;
+  }
+  .kpi-grid > a {
+    min-width: 0;
+  }
+  /* Last card spans full width if odd count */
+  .kpi-grid > a:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .kpi-grid > a > div {
+    padding: 14px 12px !important;
+  }
+  .kpi-grid > a > div > p:first-child {
+    font-size: 10px !important;
+    margin-bottom: 6px !important;
+  }
+  .kpi-grid > a > div > p:nth-child(2) {
+    font-size: 26px !important;
+  }
+  .kpi-grid > a > div > p:last-child {
+    font-size: 11px !important;
   }
 
-  /* Dashboard main grid */
+  /* Dashboard main grid — single column */
   .main-grid {
     grid-template-columns: 1fr !important;
   }
@@ -253,13 +314,40 @@ html, body {
     grid-template-columns: 1fr !important;
   }
 
+  /* View filter buttons — fit all 3 on screen */
+  .view-filter-bar {
+    gap: 6px !important;
+    margin-bottom: 16px !important;
+    margin-top: 12px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+  }
+  .view-filter-bar button {
+    padding: 7px 16px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Schedule slot rows — wrap on mobile */
+  .slot-row {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 10px 0 !important;
+  }
+  .slot-row .slot-category-tag,
+  .slot-row .slot-instructor-pill {
+    font-size: 10px !important;
+    padding: 3px 8px !important;
+  }
+
   /* Schedule 7-col grid — horizontal scroll */
   .week-grid {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
   .week-grid > div {
-    min-width: 160px;
+    min-width: 140px;
   }
 
   /* Responsive tables */
@@ -274,26 +362,50 @@ html, body {
   /* Schedule header — stack on mobile */
   .schedule-header {
     flex-direction: column !important;
-    gap: 12px !important;
-    align-items: flex-start !important;
-  }
-
-  /* Dashboard top header — stack on mobile */
-  .dashboard-header {
-    flex-direction: column !important;
-    gap: 8px !important;
+    gap: 10px !important;
     align-items: flex-start !important;
   }
 
   /* Modal panel — full width on mobile */
   .modal-panel {
-    max-width: calc(100vw - 32px);
-    margin: 16px;
+    max-width: calc(100vw - 24px) !important;
+    margin: 12px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
   }
 
   /* Stat card — smaller padding on mobile */
   .stat-card {
-    padding: 16px 18px;
+    padding: 14px 14px;
+  }
+
+  /* Action Required cards — tighter */
+  .action-card > div {
+    padding: 10px 0 !important;
+  }
+
+  /* Quick Access links — tighter */
+  .quick-access a {
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+  }
+
+  /* Generic page header flex → stack */
+  .page-header-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Table text smaller on mobile */
+  table th, table td {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+
+  /* Cards in library pages — tighter padding */
+  .library-card {
+    padding: 14px !important;
   }
 }
 
@@ -306,6 +418,9 @@ html, body {
   }
   .sidebar-overlay {
     display: none !important;
+  }
+  .sidebar {
+    transform: translateX(0) !important;
   }
 }
 
