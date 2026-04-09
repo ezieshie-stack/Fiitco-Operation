@@ -399,7 +399,7 @@ export default function ManageUsersPage() {
             </thead>
             <tbody>
               {filteredUsers.map((user) => {
-                const isSelf = user._id === currentUser?._id;
+                const isSelf = user._id === currentUser?.id;
                 const userId = user._id as Id<"users">;
 
                 return (
