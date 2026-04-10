@@ -298,7 +298,7 @@ export default function EquipmentPage() {
             <p className="font-serif" style={{ fontSize: 18, fontWeight: 500 }}>{cat}</p>
             <span style={{ fontSize: 13, color: "var(--text-muted)" }}>({items.length})</span>
           </div>
-          <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
+          <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", overflowX: "auto", WebkitOverflowScrolling: "touch", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "var(--ui-dark)" }}>

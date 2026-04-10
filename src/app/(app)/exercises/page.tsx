@@ -429,6 +429,7 @@ export default function ExercisesPage() {
                     gap:                 0,
                     padding:             "10px 28px",
                     background:          "var(--ui-dark)",
+                    minWidth:            650,
                   }}
                 >
                   {["ID", "Exercise", "Description", "Equipment", "Actions"].map((h) => (
@@ -456,6 +457,7 @@ export default function ExercisesPage() {
                       gridTemplateColumns: "80px 200px 1fr 180px 120px",
                       gap:                 0,
                       padding:             "16px 28px",
+                      minWidth:            650,
                       alignItems:          "start",
                       borderBottom:
                         i < rows.length - 1 ? "1px solid var(--border-soft)" : "none",

@@ -459,7 +459,7 @@ export default function DeliveryLogPage() {
         ) : (
           <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", overflowX: "auto", WebkitOverflowScrolling: "touch", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
             {/* Missing logs header */}
-            <div style={{ display: "grid", gridTemplateColumns: "110px 80px 130px 180px 130px 130px 100px", padding: "12px 28px", background: "var(--ui-dark)", gap: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "110px 80px 130px 180px 130px 130px 100px", padding: "12px 28px", background: "var(--ui-dark)", gap: 0, minWidth: 860 }}>
               {["Date", "Day", "Time", "Class", "Category", "Instructor", ""].map(h => (
                 <p key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "rgba(255,255,255,0.55)" }}>{h}</p>
               ))}
@@ -473,7 +473,7 @@ export default function DeliveryLogPage() {
                   style={{
                     display: "grid",
                     gridTemplateColumns: "110px 80px 130px 180px 130px 130px 100px",
-                    padding: "14px 28px", alignItems: "center", gap: 0,
+                    padding: "14px 28px", alignItems: "center", gap: 0, minWidth: 860,
                     borderBottom: i < sortedMissing.length - 1 ? "1px solid var(--border-soft)" : "none",
                   }}
                 >
@@ -522,7 +522,7 @@ export default function DeliveryLogPage() {
       ) : (
         <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", overflowX: "auto", WebkitOverflowScrolling: "touch", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
           {/* Table header */}
-          <div style={{ display: "grid", gridTemplateColumns: "110px 180px 130px 90px 80px 90px 1fr 80px", padding: "12px 28px", background: "var(--ui-dark)", gap: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "110px 180px 130px 90px 80px 90px 1fr 80px", padding: "12px 28px", background: "var(--ui-dark)", gap: 0, minWidth: 860 }}>
             {["Date", "Class", "Instructor", "Attendance", "Planned?", "Followed?", "Notes / Variations", ""].map(h => (
               <p key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "rgba(255,255,255,0.55)" }}>{h}</p>
             ))}
@@ -539,7 +539,7 @@ export default function DeliveryLogPage() {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "110px 180px 130px 90px 80px 90px 1fr 80px",
-                  padding: "16px 28px", alignItems: "center", gap: 0,
+                  padding: "16px 28px", alignItems: "center", gap: 0, minWidth: 860,
                   borderBottom: i < filtered.length - 1 ? "1px solid var(--border-soft)" : "none",
                   transition: "background 0.1s",
                   background: isHovered ? "var(--bg-beige)" : "transparent",

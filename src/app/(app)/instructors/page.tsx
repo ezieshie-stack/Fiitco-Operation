@@ -277,6 +277,8 @@ export default function InstructorsPage() {
           background: "var(--bg-panel)",
           borderRadius: "var(--radius-card)",
           overflow: "hidden",
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
           boxShadow: "0 4px 24px rgba(0,0,0,0.04)",
         }}
       >
