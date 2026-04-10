@@ -304,6 +304,7 @@ function AvailabilityTable({
     : ["Day", "Start", "End", "Available", "Notes", ""];
 
   return (
+    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
     <table style={{ width: "100%", borderCollapse: "collapse" }}>
       <thead>
         <tr style={{ background: "var(--ui-dark)" }}>
@@ -410,6 +411,7 @@ function AvailabilityTable({
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
