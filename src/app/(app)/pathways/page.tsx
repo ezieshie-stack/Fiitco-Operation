@@ -353,7 +353,7 @@ export default function PathwaysPage() {
       )}
 
       {/* Stat row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 32 }}>
+      <div className="lesson-stat-grid" style={{ display: "grid", gap: 14, marginBottom: 32 }}>
         {[
           { label: "Total Pathways",  value: pathways.length,          color: "var(--text-main)" },
           { label: "Active",          value: activeCount,               color: "var(--tag-green-txt)" },

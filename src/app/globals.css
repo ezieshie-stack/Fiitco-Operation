@@ -204,6 +204,14 @@ html, body {
   text-align: right;
 }
 
+/* Stat grids — desktop defaults (moved out of inline styles for mobile override) */
+.exercise-cat-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+.lesson-stat-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 @media (max-width: 768px) {
   /* Sidebar slide-over */
   .sidebar {
@@ -413,8 +421,8 @@ html, body {
 
   /* Stat grid — 2 columns on mobile */
   .lesson-stat-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   /* Plan card header — stack on mobile */
@@ -440,6 +448,14 @@ html, body {
   /* Filter pills on lesson plans */
   .lesson-stat-grid + div {
     flex-wrap: wrap;
+  }
+
+  /* ── Exercise Library ─────────────────────────── */
+
+  /* Category stat grid — 3 cols on mobile (5 cats) */
+  .exercise-cat-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px !important;
   }
 }
 

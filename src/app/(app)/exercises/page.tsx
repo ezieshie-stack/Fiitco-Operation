@@ -275,9 +275,9 @@ export default function ExercisesPage() {
 
       {/* ── Stats row ── */}
       <div
+        className="exercise-cat-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
           gap: 12,
           marginTop: 28,
           marginBottom: 28,

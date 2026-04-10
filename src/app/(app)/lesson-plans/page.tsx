@@ -458,7 +458,7 @@ export default function LessonPlansPage() {
       )}
 
       {/* Stat row */}
-      <div className="lesson-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
+      <div className="lesson-stat-grid" style={{ display: "grid", gap: 14, marginBottom: 28 }}>
         {[
           { label: "Total Plans",    value: plans.length, color: "var(--text-main)" },
           { label: "Approved",       value: approved,     color: "var(--tag-green-txt)" },

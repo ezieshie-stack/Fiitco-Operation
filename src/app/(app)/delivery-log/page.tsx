@@ -390,7 +390,7 @@ export default function DeliveryLogPage() {
       )}
 
       {/* Stat cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
+      <div className="lesson-stat-grid" style={{ display: "grid", gap: 14, marginBottom: 28 }}>
         {[
           { label: "Classes Logged",      value: logs.length,         sub: "Total entries",                    color: "var(--text-main)" },
           { label: "Avg Fill Rate",        value: `${avgFillRate}%`,   sub: `${totalAttendance} / ${totalCapacity} spots`, color: "var(--tag-blue-txt)" },
