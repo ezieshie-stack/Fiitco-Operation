@@ -511,20 +511,20 @@ export default function LessonPlansPage() {
                 onMouseLeave={() => setHoveredId(null)}
               >
                 {/* Collapsed header */}
-                <div className="plan-card-header" style={{ display: "flex", alignItems: "center", gap: 16, padding: "20px 26px" }}>
+                <div className="plan-card-header" style={{ display: "flex", alignItems: "center" }}>
                   {/* Clickable area */}
                   <button
                     className="plan-card-btn"
                     onClick={() => setExpanded(isOpen ? null : plan._id)}
-                    style={{ display: "flex", alignItems: "center", gap: 16, background: "none", border: "none", cursor: "pointer", textAlign: "left", flex: 1, minWidth: 0, flexWrap: "wrap" }}
+                    style={{ display: "flex", alignItems: "center", background: "none", border: "none", cursor: "pointer", textAlign: "left", flex: 1, minWidth: 0 }}
                   >
-                    <span style={{ fontSize: 11, fontWeight: 700, background: ss.bg, color: ss.color, padding: "5px 12px", borderRadius: "var(--radius-pill)", flexShrink: 0 }}>
+                    <span className="plan-card-badge" style={{ fontSize: 11, fontWeight: 700, background: ss.bg, color: ss.color, padding: "5px 12px", borderRadius: "var(--radius-pill)" }}>
                       {ss.label}
                     </span>
-                    <p className="font-serif plan-card-title" style={{ fontSize: 18, fontWeight: 500, color: "var(--text-main)", flex: 1, textAlign: "left", minWidth: 120 }}>
+                    <p className="font-serif plan-card-title" style={{ fontSize: 18, fontWeight: 500, color: "var(--text-main)", flex: 1, textAlign: "left" }}>
                       {plan.className}
                     </p>
-                    <div className="plan-card-meta" style={{ display: "flex", gap: 20, alignItems: "center", flexShrink: 0 }}>
+                    <div className="plan-card-meta" style={{ display: "flex", alignItems: "center" }}>
                       <div style={{ textAlign: "right" }}>
                         <p style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>{plan.instructorName}</p>
                         <p style={{ fontSize: 11, color: "var(--text-muted)" }}>Week of {plan.weekOf}</p>

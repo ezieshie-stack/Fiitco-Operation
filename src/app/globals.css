@@ -212,6 +212,23 @@ html, body {
   grid-template-columns: repeat(4, 1fr);
 }
 
+/* Plan card layout defaults */
+.plan-card-header {
+  gap: 16px;
+  padding: 20px 26px;
+}
+.plan-card-btn {
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.plan-card-meta {
+  gap: 20px;
+  flex-shrink: 0;
+}
+.plan-card-title {
+  min-width: 120px;
+}
+
 @media (max-width: 768px) {
   /* Sidebar slide-over */
   .sidebar {
@@ -427,22 +444,31 @@ html, body {
 
   /* Plan card header — stack on mobile */
   .plan-card-header {
-    padding: 14px 16px !important;
-    gap: 10px !important;
+    padding: 14px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
   }
   .plan-card-btn {
-    flex-wrap: wrap !important;
-    gap: 8px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+  .plan-card-badge {
+    flex-shrink: 0;
   }
   .plan-card-title {
-    font-size: 15px !important;
-    min-width: 0 !important;
-    flex-basis: 100% !important;
+    font-size: 15px;
+    min-width: 0;
+    flex-basis: 60%;
   }
   .plan-card-meta {
-    gap: 12px !important;
+    gap: 12px;
+    flex-shrink: 1;
     flex-wrap: wrap;
-    font-size: 11px !important;
+    width: 100%;
+  }
+  .plan-card-meta > div {
+    text-align: left;
   }
 
   /* Filter pills on lesson plans */
