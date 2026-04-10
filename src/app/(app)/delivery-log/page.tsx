@@ -457,7 +457,7 @@ export default function DeliveryLogPage() {
             All caught up — every past class has a delivery log ✓
           </div>
         ) : (
-          <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
+          <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", overflowX: "auto", WebkitOverflowScrolling: "touch", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
             {/* Missing logs header */}
             <div style={{ display: "grid", gridTemplateColumns: "110px 80px 130px 180px 130px 130px 100px", padding: "12px 28px", background: "var(--ui-dark)", gap: 0 }}>
               {["Date", "Day", "Time", "Class", "Category", "Instructor", ""].map(h => (
@@ -520,7 +520,7 @@ export default function DeliveryLogPage() {
           <p style={{ color: "var(--text-muted)", fontSize: 15 }}>No logs found — add a delivery log or change the filter.</p>
         </div>
       ) : (
-        <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
+        <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", overflowX: "auto", WebkitOverflowScrolling: "touch", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
           {/* Table header */}
           <div style={{ display: "grid", gridTemplateColumns: "110px 180px 130px 90px 80px 90px 1fr 80px", padding: "12px 28px", background: "var(--ui-dark)", gap: 0 }}>
             {["Date", "Class", "Instructor", "Attendance", "Planned?", "Followed?", "Notes / Variations", ""].map(h => (

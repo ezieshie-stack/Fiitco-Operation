@@ -363,6 +363,8 @@ export default function ManageUsersPage() {
             borderRadius: "var(--radius-card)",
             border: "1px solid var(--border-soft)",
             overflow: "hidden",
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
           }}
         >
           <table

@@ -389,6 +389,8 @@ export default function ExercisesPage() {
                   background:   "var(--bg-panel)",
                   borderRadius: "var(--radius-card)",
                   overflow:     "hidden",
+                  overflowX:    "auto" as const,
+                  WebkitOverflowScrolling: "touch" as const,
                   boxShadow:    "0 2px 12px rgba(0,0,0,0.03)",
                 }}
               >

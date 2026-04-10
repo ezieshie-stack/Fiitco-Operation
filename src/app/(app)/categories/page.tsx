@@ -188,8 +188,8 @@ export default function CategoriesPage() {
 
       {/* Subcategories tab */}
       {tab === "subcategories" && (
-        <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "80px 180px 180px 1fr 70px", padding: "12px 28px", background: "var(--ui-dark)" }}>
+        <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", overflow: "hidden", overflowX: "auto", WebkitOverflowScrolling: "touch", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "80px 180px 180px 1fr 70px", padding: "12px 28px", background: "var(--ui-dark)", minWidth: 600 }}>
             {["ID", "Subcategory", "Category", "Description", "Status"].map(h => (
               <p key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "rgba(255,255,255,0.55)" }}>{h}</p>
             ))}
@@ -198,7 +198,7 @@ export default function CategoriesPage() {
             const tag = CAT_TAG[sub.categoryName] ?? { bg: "var(--bg-beige)", color: "var(--text-muted)" };
             return (
               <div key={sub._id}
-                style={{ display: "grid", gridTemplateColumns: "80px 180px 180px 1fr 70px", padding: "16px 28px", borderBottom: i < subcategories.length - 1 ? "1px solid var(--border-soft)" : "none", alignItems: "center", transition: "background 0.1s" }}
+                style={{ display: "grid", gridTemplateColumns: "80px 180px 180px 1fr 70px", padding: "16px 28px", borderBottom: i < subcategories.length - 1 ? "1px solid var(--border-soft)" : "none", alignItems: "center", transition: "background 0.1s", minWidth: 600 }}
                 onMouseEnter={e => (e.currentTarget.style.background = "var(--bg-beige)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
