@@ -78,10 +78,12 @@ export default defineSchema({
     exerciseId: v.string(),
     name: v.string(),
     category: v.string(),
+    subcategory: v.optional(v.string()),
+    tier: v.optional(v.string()),
     description: v.string(),
     equipment: v.array(v.string()),
     active: v.boolean(),
-  }),
+  }).index("by_category", ["category"]),
 
   weeklySchedule: defineTable({
     date: v.string(),

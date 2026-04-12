@@ -7,15 +7,22 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { useAuth } from "@/contexts/AuthContext";
 
 const CATEGORIES = [
-  "Boxing",
   "Strength & Conditioning",
+  "Boxing",
   "Hybrid",
-  "Cardio",
   "Pilates",
   "Yoga",
 ] as const;
 
 type Category = (typeof CATEGORIES)[number];
+
+const SUBCATEGORIES: Record<string, string[]> = {
+  "Strength & Conditioning": ["Lower Body", "Upper Body", "Core", "Full Body Lift", "Glute Isolation"],
+  Boxing: ["Technique", "Beginner Boxing", "Advanced Boxing"],
+  Hybrid: ["Conditioning", "Explosive Cardio", "Hybrid Standard"],
+  Pilates: ["Mat Pilates"],
+  Yoga: ["Flow Yoga", "Restorative Yoga"],
+};
 
 const CAT_TAG: Record<string, { bg: string; color: string }> = {
   "Strength & Conditioning": { bg: "var(--tag-red-bg)",    color: "var(--tag-red-txt)" },
@@ -23,25 +30,25 @@ const CAT_TAG: Record<string, { bg: string; color: string }> = {
   Hybrid:                    { bg: "var(--tag-purple-bg)", color: "var(--tag-purple-txt)" },
   Pilates:                   { bg: "var(--tag-yellow-bg)", color: "var(--tag-yellow-txt)" },
   Yoga:                      { bg: "var(--tag-green-bg)",  color: "var(--tag-green-txt)" },
-  Cardio:                    { bg: "var(--tag-yellow-bg)", color: "var(--tag-yellow-txt)" },
 };
 
 const GROUP_ORDER: Category[] = [
-  "Boxing",
   "Strength & Conditioning",
+  "Boxing",
   "Hybrid",
-  "Cardio",
   "Pilates",
   "Yoga",
 ];
 
-const STAT_CATS: Category[] = ["Boxing", "Strength & Conditioning", "Hybrid", "Cardio", "Pilates"];
+const STAT_CATS: Category[] = ["Strength & Conditioning", "Boxing", "Hybrid", "Pilates", "Yoga"];
 
 interface Exercise {
   _id: Id<"exercises">;
   exerciseId: string;
   name: string;
   category: string;
+  subcategory?: string;
+  tier?: string;
   description: string;
   equipment: string[];
   active: boolean;
@@ -50,13 +57,17 @@ interface Exercise {
 interface FormState {
   name: string;
   category: Category;
+  subcategory: string;
+  tier: string;
   description: string;
   equipment: string;
 }
 
 const EMPTY_FORM: FormState = {
   name: "",
-  category: "Boxing",
+  category: "Strength & Conditioning",
+  subcategory: "",
+  tier: "All Levels",
   description: "",
   equipment: "",
 };
@@ -120,7 +131,9 @@ export default function ExercisesPage() {
     setEditTarget(ex);
     setForm({
       name:        ex.name,
-      category:    (CATEGORIES.includes(ex.category as Category) ? ex.category : "Boxing") as Category,
+      category:    (CATEGORIES.includes(ex.category as Category) ? ex.category : "Strength & Conditioning") as Category,
+      subcategory: ex.subcategory ?? "",
+      tier:        ex.tier ?? "All Levels",
       description: ex.description,
       equipment:   ex.equipment.join(", "),
     });
@@ -146,6 +159,8 @@ export default function ExercisesPage() {
           id:          editTarget._id,
           name:        form.name.trim(),
           category:    form.category,
+          subcategory: form.subcategory || undefined,
+          tier:        form.tier || undefined,
           description: form.description.trim(),
           equipment:   equipmentArr,
           active:      editTarget.active,
@@ -166,11 +181,13 @@ export default function ExercisesPage() {
           showStatus({ type: "pending", text: "Submitted for review — admin will approve" });
         }
       } else {
-        const exerciseId = `EXC-${String(exercises.length + 1).padStart(2, "0")}`;
+        const exerciseId = `EXC-${String(exercises.length + 1).padStart(3, "0")}`;
         const addPayload = {
           exerciseId,
           name:        form.name.trim(),
           category:    form.category,
+          subcategory: form.subcategory || undefined,
+          tier:        form.tier || undefined,
           description: form.description.trim(),
           equipment:   equipmentArr,
         };
@@ -425,14 +442,14 @@ export default function ExercisesPage() {
                 <div
                   style={{
                     display:             "grid",
-                    gridTemplateColumns: "80px 200px 1fr 180px 120px",
+                    gridTemplateColumns: "70px 180px 120px 90px 1fr 150px 100px",
                     gap:                 0,
                     padding:             "10px 28px",
                     background:          "var(--ui-dark)",
-                    minWidth:            650,
+                    minWidth:            800,
                   }}
                 >
-                  {["ID", "Exercise", "Description", "Equipment", "Actions"].map((h) => (
+                  {["ID", "Exercise", "Subcategory", "Tier", "Description", "Equipment", "Actions"].map((h) => (
                     <p
                       key={h}
                       style={{
@@ -454,10 +471,10 @@ export default function ExercisesPage() {
                     key={ex._id}
                     style={{
                       display:             "grid",
-                      gridTemplateColumns: "80px 200px 1fr 180px 120px",
+                      gridTemplateColumns: "70px 180px 120px 90px 1fr 150px 100px",
                       gap:                 0,
                       padding:             "16px 28px",
-                      minWidth:            650,
+                      minWidth:            800,
                       alignItems:          "start",
                       borderBottom:
                         i < rows.length - 1 ? "1px solid var(--border-soft)" : "none",
@@ -486,13 +503,41 @@ export default function ExercisesPage() {
                     <p
                       className="font-serif"
                       style={{
-                        fontSize:   16,
+                        fontSize:   15,
                         fontWeight: 500,
                         color:      "var(--text-main)",
                       }}
                     >
                       {ex.name}
                     </p>
+
+                    {/* Subcategory */}
+                    <p
+                      style={{
+                        fontSize:   12,
+                        color:      "var(--text-muted)",
+                        fontWeight: 500,
+                        paddingTop: 2,
+                      }}
+                    >
+                      {ex.subcategory ?? "—"}
+                    </p>
+
+                    {/* Tier */}
+                    <span
+                      style={{
+                        fontSize:     10,
+                        fontWeight:   600,
+                        padding:      "3px 8px",
+                        borderRadius: 6,
+                        background:   "var(--bg-beige)",
+                        color:        "var(--text-muted)",
+                        display:      "inline-block",
+                        width:        "fit-content",
+                      }}
+                    >
+                      {ex.tier ?? "—"}
+                    </span>
 
                     {/* Description */}
                     <p
@@ -516,7 +561,7 @@ export default function ExercisesPage() {
                             fontStyle:  "italic",
                           }}
                         >
-                          No equipment
+                          None
                         </span>
                       ) : (
                         ex.equipment.map((eq) => (
@@ -538,17 +583,17 @@ export default function ExercisesPage() {
                     </div>
 
                     {/* Actions */}
-                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                       <button
                         onClick={() => openEdit(ex)}
                         style={{
-                          fontSize:     12,
+                          fontSize:     11,
                           fontWeight:   600,
                           color:        "var(--tag-blue-txt)",
                           background:   "var(--tag-blue-bg)",
                           border:       "none",
                           borderRadius: 6,
-                          padding:      "5px 12px",
+                          padding:      "4px 10px",
                           cursor:       "pointer",
                         }}
                       >
@@ -557,17 +602,17 @@ export default function ExercisesPage() {
                       <button
                         onClick={() => openDelete(ex)}
                         style={{
-                          fontSize:     12,
+                          fontSize:     11,
                           fontWeight:   600,
                           color:        "var(--tag-red-txt)",
                           background:   "var(--tag-red-bg)",
                           border:       "none",
                           borderRadius: 6,
-                          padding:      "5px 12px",
+                          padding:      "4px 10px",
                           cursor:       "pointer",
                         }}
                       >
-                        Delete
+                        Del
                       </button>
                     </div>
                   </div>
@@ -626,12 +671,51 @@ export default function ExercisesPage() {
                   style={{ width: "100%", boxSizing: "border-box" }}
                   value={form.category}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, category: e.target.value as Category }))
+                    setForm((f) => ({ ...f, category: e.target.value as Category, subcategory: "" }))
                   }
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
                       {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Subcategory */}
+              <div>
+                <label className="field-label">Subcategory</label>
+                <select
+                  className="field-input"
+                  style={{ width: "100%", boxSizing: "border-box" }}
+                  value={form.subcategory}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, subcategory: e.target.value }))
+                  }
+                >
+                  <option value="">— Select —</option>
+                  {(SUBCATEGORIES[form.category] ?? []).map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Tier */}
+              <div>
+                <label className="field-label">Tier</label>
+                <select
+                  className="field-input"
+                  style={{ width: "100%", boxSizing: "border-box" }}
+                  value={form.tier}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, tier: e.target.value }))
+                  }
+                >
+                  {["All Levels", "Beginner", "Beginner+", "Intermediate", "Intermediate+", "Advanced"].map((t) => (
+                    <option key={t} value={t}>
+                      {t}
                     </option>
                   ))}
                 </select>
