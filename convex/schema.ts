@@ -192,4 +192,36 @@ export default defineSchema({
   })
     .index("by_email", ["email"])
     .index("by_status", ["status"]),
+
+  guestPasses: defineTable({
+    memberFirstName: v.string(),
+    memberPhone: v.string(),
+    guestFirstName: v.string(),
+    guestPhone: v.string(),
+    status: v.string(),              // "pending" | "redeemed" | "expired"
+    createdAt: v.number(),
+    redeemedAt: v.optional(v.number()),
+    monthKey: v.string(),            // YYYY-MM for monthly limit enforcement
+    createdBy: v.string(),           // "website" | "front-desk"
+    redeemedBy: v.optional(v.string()),
+  })
+    .index("by_memberPhone", ["memberPhone"])
+    .index("by_guestPhone", ["guestPhone"])
+    .index("by_status", ["status"])
+    .index("by_monthKey_memberPhone", ["monthKey", "memberPhone"]),
+
+  referrals: defineTable({
+    referrerFirstName: v.string(),
+    referrerPhone: v.string(),
+    friendFirstName: v.string(),
+    friendPhone: v.string(),
+    status: v.string(),              // "pending" | "completed" | "rewarded"
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+    rewardedAt: v.optional(v.number()),
+    notes: v.optional(v.string()),
+  })
+    .index("by_referrerPhone", ["referrerPhone"])
+    .index("by_friendPhone", ["friendPhone"])
+    .index("by_status", ["status"]),
 });
