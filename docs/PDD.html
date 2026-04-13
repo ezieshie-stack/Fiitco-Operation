@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FIIT.CO — Product Design Document</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a1a1a; background: #fff; padding: 60px; max-width: 960px; margin: 0 auto; line-height: 1.6; }
+  .cover { text-align: center; padding: 80px 0 60px; border-bottom: 4px solid #D92B2B; margin-bottom: 60px; }
+  .cover .logo { font-size: 52px; font-weight: 900; letter-spacing: -2px; margin-bottom: 16px; }
+  .cover .logo span { color: #D92B2B; }
+  .cover h1 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.3em; color: #888; margin-bottom: 8px; }
+  .cover .doc-title { font-size: 32px; font-weight: 700; margin-bottom: 32px; }
+  .meta { display: flex; justify-content: center; gap: 48px; font-size: 12px; color: #666; }
+  .meta div { text-align: center; }
+  .meta strong { display: block; color: #1a1a1a; font-size: 13px; margin-bottom: 2px; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.25em; color: #D92B2B; border-bottom: 1px solid #eee; padding-bottom: 8px; margin: 52px 0 20px; display: flex; align-items: center; gap: 10px; }
+  h2::before { content: ''; display: inline-block; width: 24px; height: 2px; background: #D92B2B; flex-shrink: 0; }
+  h3 { font-size: 14px; font-weight: 700; margin: 28px 0 10px; color: #1a1a1a; }
+  h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 20px 0 8px; }
+  p { margin-bottom: 12px; color: #333; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+  th { background: #1a1a1a; color: #fff; text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
+  td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  ul, ol { margin: 0 0 16px 20px; color: #333; }
+  li { margin-bottom: 6px; }
+  code { background: #f4f4f4; padding: 2px 6px; font-family: 'Courier New', monospace; font-size: 12px; border-radius: 3px; }
+  pre { background: #1a1a1a; color: #e0e0e0; padding: 20px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.7; margin-bottom: 20px; overflow-x: auto; }
+  pre .red { color: #ff6b6b; }
+  pre .dim { color: #666; }
+  .badge { display: inline-block; background: #D92B2B; color: #fff; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 8px; font-weight: 700; }
+  .badge.dark { background: #1a1a1a; }
+  .page-spec { border: 1px solid #eee; margin-bottom: 40px; }
+  .page-spec-header { background: #1a1a1a; color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .page-spec-header h3 { color: #fff; margin: 0; font-size: 15px; }
+  .page-spec-header .route { font-family: 'Courier New', monospace; font-size: 12px; color: #D92B2B; }
+  .page-spec-body { padding: 20px; }
+  .section-row { padding: 12px 0; border-bottom: 1px solid #f5f5f5; display: grid; grid-template-columns: 180px 1fr; gap: 16px; }
+  .section-row:last-child { border-bottom: none; }
+  .section-row .label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; padding-top: 2px; }
+  .swatch { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .swatch-box { width: 20px; height: 20px; border: 1px solid #ddd; flex-shrink: 0; }
+  .checklist { list-style: none; margin-left: 0; }
+  .checklist li::before { content: '☐  '; color: #D92B2B; font-size: 12px; }
+  .footer { margin-top: 80px; padding-top: 20px; border-top: 1px solid #eee; font-size: 11px; color: #aaa; display: flex; justify-content: space-between; }
+  @media print {
+    body { padding: 40px; }
+    .cover { padding: 40px 0; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">FIIT<span>.CO</span></div>
+  <h1>Document</h1>
+  <div class="doc-title">Product Design Document</div>
+  <div class="meta">
+    <div><strong>Version</strong>1.0</div>
+    <div><strong>Date</strong>April 2026</div>
+    <div><strong>Phase</strong>Phase 1 — In Development</div>
+    <div><strong>Stack</strong>Next.js 16 / Vercel</div>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<h2>1. Architecture Overview</h2>
+<p>The website lives under the <code>/site</code> route group inside the existing Next.js monorepo. It is completely isolated from the internal class management app which lives under the <code>/(app)</code> route group.</p>
+
+<pre>src/app/
+├── <span class="dim">(app)/                  ← Internal class management tool (SEPARATE)</span>
+│   └── <span class="dim">manage-users/ ...</span>
+└── <span class="red">site/                   ← Public website (THIS PROJECT)</span>
+    ├── layout.tsx           ← Shared nav + font injection
+    ├── page.tsx             ← Homepage
+    ├── booking/page.tsx     ← Booking confirmation
+    ├── trainers/[slug]/     ← Trainer profile (dynamic)
+    ├── classes/[slug]/      ← Class detail (dynamic)
+    ├── member/page.tsx      ← Member dashboard
+    └── onboarding/page.tsx  ← Onboarding wizard</pre>
+
+<p><strong>Route isolation:</strong> The <code>/site</code> layout renders its own nav and styling. It does not inherit the internal app's auth checks. Any visitor can access all <code>/site</code> pages without logging in.</p>
+
+<!-- NAVIGATION -->
+<h2>2. Navigation</h2>
+<p>Fixed top nav present on all pages. Height: 72px. Background: <code>rgba(0,0,0,0.95)</code> with backdrop blur.</p>
+<table>
+  <tr><th>Link</th><th>Destination</th><th>Notes</th></tr>
+  <tr><td><strong>FIIT.CO</strong> logo</td><td>/site</td><td>Homepage</td></tr>
+  <tr><td>SCHEDULE</td><td>/site</td><td>Homepage</td></tr>
+  <tr><td>TRAINERS</td><td>/site/trainers/jason-battiste</td><td>Trainer roster</td></tr>
+  <tr><td>MEMBERSHIPS</td><td>/site</td><td>Pricing section</td></tr>
+  <tr><td>THE STUDIO</td><td>/site</td><td>Foundry section</td></tr>
+  <tr><td><strong>BOOK SESSION</strong></td><td>/site/booking</td><td>Primary CTA — red filled button</td></tr>
+</table>
+
+<!-- PAGE SPECS -->
+<h2>3. Page Specifications</h2>
+
+<!-- HOMEPAGE -->
+<div class="page-spec">
+  <div class="page-spec-header">
+    <h3>3.1 — Homepage</h3>
+    <span class="route">/site</span>
+  </div>
+  <div class="page-spec-body">
+    <p><em>Purpose: Establish brand identity, showcase offering, drive bookings.</em></p>
+
+    <div class="section-row"><div class="label">Hero</div><div>Full-bleed boxing photo, dark overlay, watermark "BOXING" text. Headline: <strong>FIGHT FOR YOUR BEST SELF</strong>. CTAs: Book Now (red) + Get Started (outline).</div></div>
+    <div class="section-row"><div class="label">Info Bar</div><div>Dark strip, red top border. Location / Phone / Hours.</div></div>
+    <div class="section-row"><div class="label">Trainers</div><div>5-column portrait grid. Grayscale by default, colour on hover. Name below photo. Links to trainer profile.</div></div>
+    <div class="section-row"><div class="label">Three Pillars</div><div><strong>01 THE TRAINING</strong> / <strong>02 THE SPACE</strong> / <strong>03 THE COMMUNITY</strong> — large red headings, body copy, 3-column layout.</div></div>
+    <div class="section-row"><div class="label">Investment Tiers</div><div>Tab bar: GROUP CLASSES / PERSONAL TRAINING / KIDS ACADEMY. Three pricing cards. See pricing table below.</div></div>
+    <div class="section-row"><div class="label">Refer a Contender</div><div>Full-width red banner. Headline: REFER A CONTENDER. 50% off next month per referral.</div></div>
+    <div class="section-row"><div class="label">Studio Credits</div><div>4 gift card tiles: $50 / $100 / $250 / $500. White border, hover turns red.</div></div>
+    <div class="section-row"><div class="label">Foundry</div><div>Two columns: founder quote (left) + 3×2 equipment grid (right). Equipment: Heavy Bags (X30), Speed Bags (X5), Olympic Squat Rack, Assault Bikes (X12), Custom 18ft Ring, Ice Bath Facility.</div></div>
+    <div class="section-row"><div class="label">Footer</div><div>4 columns: Logo + tagline / EXPLORE / SUPPORT / CONNECT. Red column headings.</div></div>
+
+    <h4>Pricing Cards</h4>
+    <table>
+      <tr><th>Plan</th><th>Label</th><th>Price</th><th>Features</th><th>CTA</th></tr>
+      <tr><td><strong>SINGLE FIGHT</strong></td><td>STARTER</td><td>$35/cad</td><td>1 Group Session, Gloves Rental, Valid 30 Days</td><td>BUY NOW (outline)</td></tr>
+      <tr><td><strong>UNLIMITED FIIT</strong></td><td>RECOMMENDED</td><td>$249/mo</td><td>Unlimited Classes, 2 Guest Passes/Month, 15% Discount, Priority Booking</td><td>SELECT PLAN (red filled)</td></tr>
+      <tr><td><strong>10 SESSION PACK</strong></td><td>COMMITTED</td><td>$280/cad</td><td>10 Sessions, No Expiry, Shared Account Access</td><td>BUY NOW (outline)</td></tr>
+    </table>
+
+    <h4>Trainers</h4>
+    <table>
+      <tr><th>Name</th><th>Slug</th><th>Specialty</th></tr>
+      <tr><td>Jason Battiste</td><td>jason-battiste</td><td>Counter-Punching</td></tr>
+      <tr><td>Matt Makar</td><td>matt-makar</td><td>Strength & Power</td></tr>
+      <tr><td>Sarah Green</td><td>sarah-green</td><td>Technique & Flow</td></tr>
+      <tr><td>Jaye Pan</td><td>jaye-pan</td><td>Endurance</td></tr>
+      <tr><td>Nick Radionov</td><td>nick-radionov</td><td>Explosive Output</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- BOOKING -->
+<div class="page-spec">
+  <div class="page-spec-header">
+    <h3>3.2 — Booking Confirmation</h3>
+    <span class="route">/site/booking</span>
+  </div>
+  <div class="page-spec-body">
+    <p><em>Purpose: Confirm a booked session and reduce no-shows.</em></p>
+    <div class="section-row"><div class="label">Confirmation</div><div>Checkmark icon + "Booking Confirmed" heading. Class name, date/time, trainer, location, confirmation number.</div></div>
+    <div class="section-row"><div class="label">Checklist</div><div>What to bring: gloves, hand wraps, water, towel.</div></div>
+    <div class="section-row"><div class="label">Policy</div><div>Cancellation: 24hr notice required.</div></div>
+    <div class="section-row"><div class="label">Actions</div><div>Add to Calendar / Book Another Session / Go to Member Dashboard.</div></div>
+    <div class="section-row"><div class="label">Recommendations</div><div>3 recommended class cards.</div></div>
+  </div>
+</div>
+
+<!-- TRAINER PROFILE -->
+<div class="page-spec">
+  <div class="page-spec-header">
+    <h3>3.3 — Trainer Profile</h3>
+    <span class="route">/site/trainers/[slug]</span>
+  </div>
+  <div class="page-spec-body">
+    <p><em>Supported slugs: jason-battiste, matt-makar</em></p>
+    <div class="section-row"><div class="label">Hero</div><div>Full-bleed grayscale portrait image with name overlay.</div></div>
+    <div class="section-row"><div class="label">Stats Bar</div><div>Years Experience / Clients Trained / Titles / Classes Per Week.</div></div>
+    <div class="section-row"><div class="label">Bio</div><div>Trainer biography paragraph.</div></div>
+    <div class="section-row"><div class="label">Philosophy</div><div>Blockquote with red left border.</div></div>
+    <div class="section-row"><div class="label">Specialisations</div><div>Tag chip list.</div></div>
+    <div class="section-row"><div class="label">Certifications</div><div>Bullet list of credentials.</div></div>
+    <div class="section-row"><div class="label">Schedule</div><div>Weekly schedule panel with per-slot Book CTA.</div></div>
+  </div>
+</div>
+
+<!-- CLASS DETAIL -->
+<div class="page-spec">
+  <div class="page-spec-header">
+    <h3>3.4 — Class Detail</h3>
+    <span class="route">/site/classes/[slug]</span>
+  </div>
+  <div class="page-spec-body">
+    <p><em>Supported slugs: heavy-bag-smash, ring-technicals</em></p>
+    <div class="section-row"><div class="label">Hero</div><div>Class image with category / tier / duration badges.</div></div>
+    <div class="section-row"><div class="label">Description</div><div>Class overview and format.</div></div>
+    <div class="section-row"><div class="label">What You Get</div><div>Bullet list of outcomes.</div></div>
+    <div class="section-row"><div class="label">Ideal For</div><div>Tag chips.</div></div>
+    <div class="section-row"><div class="label">Equipment</div><div>Required gear grid.</div></div>
+    <div class="section-row"><div class="label">Slot Picker</div><div>Interactive time slots — click to select, enables Confirm button.</div></div>
+    <div class="section-row"><div class="label">Trainer Teaser</div><div>Trainer card with link to trainer profile.</div></div>
+  </div>
+</div>
+
+<!-- MEMBER DASHBOARD -->
+<div class="page-spec">
+  <div class="page-spec-header">
+    <h3>3.5 — Member Dashboard</h3>
+    <span class="route">/site/member</span>
+  </div>
+  <div class="page-spec-body">
+    <p><em>Purpose: Returning member's personal hub.</em></p>
+    <div class="section-row"><div class="label">Stats Grid</div><div>Sessions Attended / Current Streak / Total Hours / Remaining Sessions.</div></div>
+    <div class="section-row"><div class="label">Upcoming Tab</div><div>Next booked sessions — class, time, trainer, cancel option.</div></div>
+    <div class="section-row"><div class="label">History Tab</div><div>Past sessions with ATTENDED / NO-SHOW badges.</div></div>
+    <div class="section-row"><div class="label">Membership Tab</div><div>Current plan card, guest passes remaining, referral code.</div></div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="page-spec">
+  <div class="page-spec-header">
+    <h3>3.6 — Onboarding Wizard</h3>
+    <span class="route">/site/onboarding</span>
+  </div>
+  <div class="page-spec-body">
+    <p><em>Purpose: Guide a new visitor to the right membership plan. Animated progress bar across steps.</em></p>
+    <table>
+      <tr><th>Step</th><th>Content</th></tr>
+      <tr><td>0 — Welcome</td><td>Studio stats: 1,200+ members, 15 classes/week, Est. 2015.</td></tr>
+      <tr><td>1 — Goal</td><td>Select: Fitness / Competition / Stress Relief / Weight Loss.</td></tr>
+      <tr><td>2 — Experience</td><td>Select: Complete Beginner / Some Experience / Trained Before / Competitive.</td></tr>
+      <tr><td>3 — Schedule</td><td>Preferred time (Morning/Afternoon/Evening) + days (multi-select Mon–Sun).</td></tr>
+      <tr><td>4 — Plan</td><td>Personalised recommendation based on goal + level.</td></tr>
+    </table>
+    <h4>Plan Recommendation Logic</h4>
+    <table>
+      <tr><th>Goal</th><th>Level</th><th>Recommended Plan</th></tr>
+      <tr><td>Fitness</td><td>Beginner</td><td>Single Fight (try it first)</td></tr>
+      <tr><td>Competition</td><td>Any</td><td>Unlimited FIIT</td></tr>
+      <tr><td>Stress Relief</td><td>Any</td><td>Unlimited FIIT</td></tr>
+      <tr><td>Weight Loss</td><td>Experienced</td><td>10 Session Pack</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- DESIGN SYSTEM -->
+<h2>4. Design System</h2>
+
+<h3>Colours</h3>
+<table>
+  <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+  <tr><td>Red</td><td><div class="swatch"><div class="swatch-box" style="background:#D92B2B;border:none;"></div>#D92B2B</div></td><td>CTAs, headings, section labels, accents</td></tr>
+  <tr><td>Black</td><td><div class="swatch"><div class="swatch-box" style="background:#000;"></div>#000000</div></td><td>Page background</td></tr>
+  <tr><td>Dark</td><td><div class="swatch"><div class="swatch-box" style="background:#1A1A1A;"></div>#1A1A1A</div></td><td>Card backgrounds, info bar</td></tr>
+  <tr><td>White</td><td><div class="swatch"><div class="swatch-box" style="background:#fff;"></div>#FFFFFF</div></td><td>Primary text, button text</td></tr>
+  <tr><td>Muted</td><td>rgba(255,255,255,0.55)</td><td>Secondary body text</td></tr>
+  <tr><td>Border</td><td>rgba(255,255,255,0.15)</td><td>Card borders (default)</td></tr>
+</table>
+
+<h3>Typography</h3>
+<table>
+  <tr><th>Font</th><th>CSS Variable</th><th>Usage</th></tr>
+  <tr><td>Oswald</td><td>--font-oswald</td><td>All headings, prices, hero text, CTAs, logo</td></tr>
+  <tr><td>Chakra Petch</td><td>--font-chakra</td><td>Section labels, nav links, tags, small UI text</td></tr>
+  <tr><td>Inter</td><td>--font-inter</td><td>Body copy, descriptions, paragraphs</td></tr>
+</table>
+
+<h3>Section Labels</h3>
+<p>All sections use a consistent label pattern: a 28px red horizontal rule followed by uppercase Chakra Petch text (10px, letter-spacing 0.2em, colour: #D92B2B).</p>
+<pre style="background:#000;color:#D92B2B;padding:14px 20px;">—— SECTION NAME</pre>
+
+<h3>Buttons</h3>
+<table>
+  <tr><th>Type</th><th>Style</th></tr>
+  <tr><td>Primary CTA</td><td>Background: #D92B2B, Text: #fff, Font: Oswald bold uppercase</td></tr>
+  <tr><td>Secondary</td><td>Border: 1px solid rgba(255,255,255,0.6), Background: transparent</td></tr>
+  <tr><td>Outlined Dark</td><td>Border: 1px solid rgba(255,255,255,0.45), Background: transparent</td></tr>
+</table>
+
+<h3>Spacing</h3>
+<table>
+  <tr><th>Context</th><th>Value</th></tr>
+  <tr><td>Section padding</td><td>7rem 4rem (desktop)</td></tr>
+  <tr><td>Card gap</td><td>1–1.5rem</td></tr>
+  <tr><td>Pillar column gap</td><td>5rem</td></tr>
+  <tr><td>Footer columns</td><td>3rem gap</td></tr>
+</table>
+
+<!-- DATA -->
+<h2>5. Data & Content</h2>
+<h3>Phase 1 — Static</h3>
+<p>All content is hardcoded in each page component. Trainer data, class data, pricing, and equipment are static arrays defined at the top of each file. No database calls on any <code>/site</code> route.</p>
+<h3>Phase 2 — Dynamic</h3>
+<p>Content migrated to Convex database with admin interface, enabling studio staff to update schedules, trainers, and pricing without a code deploy.</p>
+
+<!-- INTEGRATIONS -->
+<h2>6. Integrations</h2>
+<table>
+  <tr><th>Service</th><th>Phase</th><th>Purpose</th></tr>
+  <tr><td>Mindbody</td><td><span class="badge dark">Phase 2</span></td><td>Live schedule, booking, payment processing</td></tr>
+  <tr><td>Google Calendar API</td><td><span class="badge dark">Phase 2</span></td><td>"Add to Calendar" on booking confirmation</td></tr>
+  <tr><td>Instagram API</td><td><span class="badge dark">Phase 2</span></td><td>Feed embed on homepage</td></tr>
+  <tr><td>Convex CMS</td><td><span class="badge dark">Phase 2</span></td><td>Dynamic content management</td></tr>
+</table>
+
+<!-- NON-FUNCTIONAL -->
+<h2>7. Non-Functional Requirements</h2>
+<table>
+  <tr><th>Requirement</th><th>Target</th></tr>
+  <tr><td>Lighthouse Performance</td><td>85+</td></tr>
+  <tr><td>Lighthouse Accessibility</td><td>90+</td></tr>
+  <tr><td>First Contentful Paint</td><td>&lt; 1.5s</td></tr>
+  <tr><td>Mobile breakpoints</td><td>375px, 768px, 1280px</td></tr>
+  <tr><td>Browser support</td><td>Chrome, Safari, Firefox (last 2 versions)</td></tr>
+</table>
+
+<!-- BACKLOG -->
+<h2>8. Phase 2 Backlog</h2>
+<ul class="checklist">
+  <li>Replace Pexels placeholder images with real studio photography</li>
+  <li>Wire booking form to Mindbody API</li>
+  <li>Add member login and session persistence</li>
+  <li>Live class schedule pull from Mindbody</li>
+  <li>Mobile responsive breakpoints (currently desktop-first)</li>
+  <li>Kids Academy and Personal Training pricing content</li>
+  <li>Email confirmation on booking</li>
+  <li>Referral code generation and tracking</li>
+  <li>SEO metadata per page (og:image, description, canonical)</li>
+  <li>Analytics integration (Google Analytics or Plausible)</li>
+  <li>Studio photography session (replace placeholder images)</li>
+  <li>Trainer profile pages for Sarah Green, Jaye Pan, Nick Radionov</li>
+  <li>Additional class detail pages beyond heavy-bag-smash and ring-technicals</li>
+</ul>
+
+<div class="footer">
+  <span>FIIT.CO — Product Design Document v1.0</span>
+  <span>Confidential — April 2026</span>
+</div>
+
+</body>
+</html>
