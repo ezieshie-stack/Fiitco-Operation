@@ -192,4 +192,38 @@ export default defineSchema({
   })
     .index("by_email", ["email"])
     .index("by_status", ["status"]),
+
+  // ── Public website: guest passes ──────────────────────────────────────────
+  guestPasses: defineTable({
+    memberFirstName:  v.string(),
+    memberPhone:      v.string(),
+    guestFirstName:   v.string(),
+    guestPhone:       v.string(),
+    status:           v.string(),   // "pending" | "redeemed" | "expired"
+    createdAt:        v.number(),
+    redeemedAt:       v.optional(v.number()),
+    monthKey:         v.string(),   // "YYYY-MM" for monthly limit tracking
+    createdBy:        v.string(),   // "website" | "front-desk"
+    redeemedBy:       v.optional(v.string()), // staff display name
+  })
+    .index("by_memberPhone", ["memberPhone"])
+    .index("by_guestPhone", ["guestPhone"])
+    .index("by_status", ["status"])
+    .index("by_monthKey_memberPhone", ["monthKey", "memberPhone"]),
+
+  // ── Public website: referrals ─────────────────────────────────────────────
+  referrals: defineTable({
+    referrerFirstName:  v.string(),
+    referrerPhone:      v.string(),
+    friendFirstName:    v.string(),
+    friendPhone:        v.string(),
+    status:             v.string(),  // "pending" | "completed" | "rewarded"
+    createdAt:          v.number(),
+    completedAt:        v.optional(v.number()),
+    rewardedAt:         v.optional(v.number()),
+    notes:              v.optional(v.string()),
+  })
+    .index("by_referrerPhone", ["referrerPhone"])
+    .index("by_friendPhone", ["friendPhone"])
+    .index("by_status", ["status"]),
 });
