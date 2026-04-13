@@ -1,26 +1,26 @@
 # FIIT.CO — Project Brief
-**Version:** 1.0  
-**Date:** April 2026  
-**Client:** FIIT Co. Boxing & Fitness  
-**Location:** 481 Richmond St W, Toronto, ON
+**Version:** 2.0
+**Date:** April 2026
+**Client:** FIIT Co. Boxing & Fitness
+**Location:** 1047 Gerrard St E, Toronto, ON M4M 1Z7
 
 ---
 
 ## 1. Overview
 
-FIIT.CO is a boutique boxing and fitness studio in downtown Toronto, established in 2015. This project is a standalone public-facing marketing website, completely separate from the internal class management tool already in operation.
+FIIT.CO is a boutique boxing and fitness studio in downtown Toronto, established in 2015. This project delivers a standalone public-facing marketing website, completely separate from the internal class management tool already in operation.
 
-The website's purpose is to drive new member acquisition, communicate the brand's identity, and enable class bookings — positioning FIIT.CO as the premier boxing destination in Toronto.
+The website drives new member acquisition, communicates the brand identity, and connects visitors to booking through Mindbody — the studio's existing booking and membership platform.
 
 ---
 
 ## 2. The Problem
 
-FIIT.CO has a fully operational internal management system but no public-facing web presence. Prospective members have no way to:
+FIIT.CO has a fully operational internal management system but no modern public-facing web presence. Prospective members have no way to:
 - Discover the studio and its offering online
-- Learn about trainers and class types
-- Book sessions without calling in
-- Understand pricing and membership options
+- Learn about trainers, programs, and class types
+- Book sessions or purchase memberships online
+- Submit guest passes or referrals digitally
 - Find the studio or assess if it's the right fit
 
 ---
@@ -29,11 +29,12 @@ FIIT.CO has a fully operational internal management system but no public-facing 
 
 | Priority | Goal |
 |---|---|
-| 1 | Drive class bookings through an online channel |
+| 1 | Drive class bookings via Mindbody integration |
 | 2 | Communicate brand identity (elite, gritty, boutique) |
-| 3 | Showcase trainers and build trainer-member relationships |
-| 4 | Convert visitors to members via clear pricing and onboarding |
-| 5 | Support referral growth through the Refer a Contender programme |
+| 3 | Showcase trainers and programs |
+| 4 | Enable digital guest pass submission |
+| 5 | Enable digital referral submission |
+| 6 | Support front desk staff with guest pass + referral management |
 
 ---
 
@@ -43,7 +44,7 @@ FIIT.CO has a fully operational internal management system but no public-facing 
 
 **Secondary:** Boxing enthusiasts looking to train seriously under professional instruction.
 
-**Tertiary:** Parents seeking structured youth boxing (Kids Academy).
+**Tertiary:** Parents seeking structured youth boxing (Kids & Teens Academy, ages 12–17).
 
 ---
 
@@ -61,23 +62,24 @@ FIIT.CO has a fully operational internal management system but no public-facing 
 
 ## 6. Scope of Work
 
-### In Scope
-- 6 public-facing web views (detailed in the PDD)
+### Public Website (New)
+- 5 public-facing pages: Homepage, About, Programs, Studio Info, Blog
 - Mobile-responsive design
-- Class booking flow
-- Trainer profiles
-- Membership/pricing pages
-- Member dashboard (returning member view)
-- Onboarding flow for new members
-- Studio credits / gift cards section
-- Referral programme section
+- All booking/membership CTAs link out to Mindbody (external)
+- Guest Pass modal form (no login required)
+- Referral modal form (no login required)
+
+### Internal Tool — Front Desk Tab (New)
+- New tab inside the existing class management tool
+- Guest pass lookup, redemption, and walk-in creation
+- Referral record lookup and status management
+- Accessible to instructors and admins only
 
 ### Out of Scope
-- Internal class management tool (separate system, already built)
-- Payment processing backend (Mindbody integration — Phase 2)
-- User authentication for members (Phase 2)
-- Blog or editorial content
 - Native mobile app
+- Payment processing (handled entirely by Mindbody)
+- Member authentication on the public website
+- Blog CMS (Phase 2 — static posts for now)
 
 ---
 
@@ -87,36 +89,71 @@ FIIT.CO has a fully operational internal management system but no public-facing 
 |---|---|
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
-| Styling | Inline styles (consistent with existing codebase) |
 | Fonts | Google Fonts via `next/font/google` |
 | Hosting | Vercel |
-| Backend | Convex (used by internal app — website is largely static) |
+| Database | Convex (guest passes + referrals tables) |
+| Booking / Membership | Mindbody (external link) |
 | Images | Pexels CDN (placeholder; real photography Phase 2) |
 
 ---
 
-## 8. Success Metrics
+## 8. Real Studio Data
 
-- Bounce rate below 50% on the homepage
-- Booking form conversion rate above 8%
-- Trainer profile page engagement (avg. time on page > 90s)
-- Referral programme click-through rate
-- Mobile usability score 90+ (Lighthouse)
-
----
-
-## 9. Phases
-
-**Phase 1 (Current):** Static marketing website with 6 core views, booking form, and onboarding flow.  
-**Phase 2:** Live class schedule integration (Mindbody API), member login, real payment processing.  
-**Phase 3:** App-like member portal with session history, streaks, and loyalty rewards.
+| Field | Value |
+|---|---|
+| Address | 1047 Gerrard St E, Toronto, ON M4M 1Z7 |
+| Phone | (416) 565-9300 |
+| Email | info@fiitco.ca |
+| Hours | Mon / Wed–Fri: 6 AM – 9 PM · Tue / Sat–Sun: 8 AM – 5 PM |
+| Mindbody | mindbodyonline.com/explore/deals/fiit-co/intro-offer-10377 |
+| Instagram | @fiitco.to |
 
 ---
 
-## 10. Stakeholders
+## 9. Trainers
+
+| Name | Role |
+|---|---|
+| Jason Battiste | Owner & Founder — Former Canadian Super Middleweight Kickboxing Champion, 35+ years experience |
+| Sarah Green | Trainer — Certified group fitness, kickboxing, TRX, yoga. ~20 years experience |
+| Tyrone Warner | Yoga Instructor — Hatha, Vinyasa, Yin traditions |
+| Nick Radionov | Boxing Academy Coach — Boxing Ontario Level 3, former Ukrainian National Olympic Team, 2x World Kickboxing Champion |
+
+---
+
+## 10. Success Metrics
+
+- Bounce rate below 50% on homepage
+- Mindbody CTA click-through rate above 12%
+- Guest pass form submissions tracked monthly
+- Referral form submissions tracked monthly
+- Mobile Lighthouse score 90+
+
+---
+
+## 11. Phases
+
+**Phase 1 (Current):**
+- Public website (5 pages)
+- Guest pass + referral modal forms
+- Front desk management tab in class management tool
+
+**Phase 2:**
+- Blog CMS (Convex-backed, staff-editable)
+- Real studio photography
+- Mobile responsive polish
+- SEO metadata + analytics
+
+**Phase 3:**
+- Member portal (session history, loyalty, streaks)
+- Mindbody webhook integration for auto-referral completion
+
+---
+
+## 12. Stakeholders
 
 | Role | Name |
 |---|---|
 | Founder / Brand Lead | Jason Battiste |
 | Development | Claude Code (Anthropic) |
-| Design Reference | Provided design screenshots (April 2026) |
+| Design Reference | fiitco.ca (existing site) + provided screenshots |

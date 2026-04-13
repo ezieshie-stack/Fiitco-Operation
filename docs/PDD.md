@@ -1,55 +1,55 @@
 # FIIT.CO — Product Design Document (PDD)
-**Version:** 1.0  
-**Date:** April 2026  
+**Version:** 2.0
+**Date:** April 2026
 **Status:** Phase 1 — In Development
 
 ---
 
 ## 1. Architecture Overview
 
-The website lives under the `/site` route group inside the existing Next.js monorepo. It is completely isolated from the internal class management app which lives under the `/(app)` route group.
+Two separate systems share the same Next.js monorepo:
 
 ```
 src/app/
-├── (app)/                  ← Internal class management tool (SEPARATE)
-│   └── manage-users/
-│       └── ...
-└── site/                   ← Public website (THIS PROJECT)
-    ├── layout.tsx           ← Shared nav + font injection
-    ├── page.tsx             ← Homepage
-    ├── booking/
-    │   └── page.tsx         ← Booking confirmation
-    ├── trainers/
-    │   └── [slug]/
-    │       └── page.tsx     ← Trainer profile (dynamic)
-    ├── classes/
-    │   └── [slug]/
-    │       └── page.tsx     ← Class detail (dynamic)
-    ├── member/
-    │   └── page.tsx         ← Member dashboard
-    └── onboarding/
-        └── page.tsx         ← Onboarding wizard
+├── (app)/                        ← Internal class management tool
+│   ├── manage-users/
+│   ├── guest-passes/             ← NEW: Front desk tab
+│   └── ...
+└── site/                         ← Public website
+    ├── layout.tsx                 ← Shared nav + fonts
+    ├── page.tsx                   ← Homepage
+    ├── about/page.tsx             ← About + Team
+    ├── programs/page.tsx          ← Programs
+    ├── studio/page.tsx            ← Studio Info
+    └── blog/
+        ├── page.tsx               ← Blog listing
+        └── [slug]/page.tsx        ← Blog post
 ```
 
-**Route isolation:** The `/site` layout renders its own nav and styling. It does not inherit the internal app's auth checks. Any visitor can access all `/site` pages without logging in.
+**Route isolation:** `/site` has no auth checks — fully public. `(app)` requires staff login.
+
+**Database:** Convex stores guest pass records and referral records. The website writes to Convex (via mutations). The front desk tool reads and manages those records.
 
 ---
 
 ## 2. Navigation
 
-### Top Nav (Fixed, all pages)
 ```
-FIIT.CO [logo]    SCHEDULE  TRAINERS  MEMBERSHIPS  THE STUDIO    [BOOK SESSION]
+FIIT.CO    ABOUT    PROGRAMS    STUDIO    BLOG    [BOOK A FREE CLASS ↗]
 ```
 
-| Link | Destination | Notes |
+| Link | Destination | Type |
 |---|---|---|
-| FIIT.CO logo | `/site` | Homepage |
-| SCHEDULE | `/site` | Links to schedule section on homepage |
-| TRAINERS | `/site/trainers/jason-battiste` | Opens trainer roster |
-| MEMBERSHIPS | `/site` | Links to pricing section |
-| THE STUDIO | `/site` | Links to Foundry section |
-| BOOK SESSION | `/site/booking` | Primary CTA — red button |
+| FIIT.CO logo | `/site` | Internal |
+| ABOUT | `/site/about` | Internal |
+| PROGRAMS | `/site/programs` | Internal |
+| STUDIO | `/site/studio` | Internal |
+| BLOG | `/site/blog` | Internal |
+| BOOK A FREE CLASS | Mindbody URL | External (new tab) |
+
+**Mindbody URL:** `https://www.mindbodyonline.com/explore/deals/fiit-co/intro-offer-10377`
+
+All booking/membership/pricing CTAs across every page point to this same Mindbody URL.
 
 ---
 
@@ -59,230 +59,295 @@ FIIT.CO [logo]    SCHEDULE  TRAINERS  MEMBERSHIPS  THE STUDIO    [BOOK SESSION]
 
 ### 3.1 Homepage (`/site`)
 
-**Purpose:** Establish brand identity, showcase offering, drive bookings.
+**Purpose:** Brand entry point. Establish identity, communicate value, drive Mindbody bookings.
 
-**Sections (top to bottom):**
+**Sections:**
+| Section | Content |
+|---|---|
+| Hero | Full-bleed boxing photo, headline: FIGHT FOR YOUR BEST SELF, CTA: Book A Free Class → Mindbody |
+| Info Bar | Address · Phone · Hours |
+| Trainers Teaser | 4 trainer portrait cards (grayscale), names below, links to `/site/about` |
+| Three Pillars | 01 THE TRAINING / 02 THE SPACE / 03 THE COMMUNITY |
+| Programs Teaser | 3 featured programs with CTA → `/site/programs` |
+| Refer a Contender | Full-width red banner with Referral CTA (triggers referral modal) |
+| Studio Credits | $50 / $100 / $250 / $500 gift card tiles → Mindbody |
+| Foundry | Founder quote + equipment grid |
+| Footer | Logo / EXPLORE / SUPPORT / CONNECT |
 
-#### Hero
-- Full-bleed boxing photography background with dark overlay
-- Watermark text "BOXING" at large scale (low opacity)
-- Headline: **FIGHT FOR YOUR BEST SELF** (Oswald, ~11vw, uppercase)
-- Two CTAs: `Book Now` (red filled) → `/site/booking`, `Get Started` (white outline) → `/site/onboarding`
+---
 
-#### Info Bar
-- Dark strip below hero
-- Red top border
-- Three data points: Location / Phone / Hours
+### 3.2 About (`/site/about`)
 
-#### Trainers
-- Section label: `— ELITE PERSONNEL`
-- 5-column grid of trainer portrait photos
-- Photos: grayscale by default, colour on hover
-- Name in small Chakra Petch text below each photo
-- Each card links to `/site/trainers/[slug]`
+**Purpose:** Tell the FIIT.CO story. Build trust. Introduce the team.
+
+**Sections:**
+| Section | Content |
+|---|---|
+| Hero | "Meet the FIIT Co Team" — full-width header with photo |
+| Studio Story | Founding story, mission, community values |
+| Trainer Profiles | Full cards: photo, name, role, bio for each trainer |
+| Our Space | Studio description — heavy bags, competition ring, recovery equipment |
+| CTA | "Try us out for free" → Mindbody |
 
 **Trainers:**
-| Name | Slug | Specialty |
+| Name | Role | Background |
 |---|---|---|
-| Jason Battiste | `jason-battiste` | Counter-Punching |
-| Matt Makar | `matt-makar` | Strength & Power |
-| Sarah Green | `sarah-green` | Technique & Flow |
-| Jaye Pan | `jaye-pan` | Endurance |
-| Nick Radionov | `nick-radionov` | Explosive Output |
-
-#### Three Pillars
-- 3-column grid, black background
-- Each pillar: number label (01/02/03) in red, large red uppercase heading, body text
-- **01 THE TRAINING** — methodology copy
-- **02 THE SPACE** — 6,000 sq ft facility copy
-- **03 THE COMMUNITY** — Toronto collective copy
-
-#### Investment Tiers
-- Section label: `— INVESTMENT TIERS`
-- Tab switcher: `GROUP CLASSES` | `PERSONAL TRAINING` | `KIDS ACADEMY`
-- Active tab: white text + red underline bar
-- 3 pricing cards:
-
-| Plan | Label | Price | Features | CTA |
-|---|---|---|---|---|
-| SINGLE FIGHT | STARTER | $35/cad | 1 Session, Gloves, 30 Days | BUY NOW (outlined) |
-| UNLIMITED FIIT | RECOMMENDED | $249/mo | Unlimited, 2 Guest Passes, 15% Discount, Priority Booking | SELECT PLAN (red filled) |
-| 10 SESSION PACK | COMMITTED | $280/cad | 10 Sessions, No Expiry, Shared Access | BUY NOW (outlined) |
-
-- UNLIMITED FIIT card: red border (2px), red-tinted background
-
-#### Refer a Contender
-- Full-width red (`#D92B2B`) banner
-- Headline: **REFER A CONTENDER** (Oswald, ~7vw)
-- Subtext: GET 50% OFF YOUR NEXT MONTH FOR EVERY REFERRAL THAT SIGNS UP.
-
-#### Studio Credits
-- Section label: `— STUDIO CREDITS`
-- 4 gift card tiles in a row: $50 / $100 / $250 / $500
-- Each: white border, hover turns red border, "Digital Gift" label below price
-
-#### Foundry
-- Section label: `— FOUNDRY`
-- Two-column layout:
-  - **Left:** Large decorative red quote mark, founder quote (Oswald bold, ~2.6rem), attribution: *– Jason Battiste, Founder*
-  - **Right:** 3×2 grid of dark equipment tiles
-    - HEAVY BAGS (X30) / SPEED BAGS (X5)
-    - OLYMPIC SQUAT RACK / ASSAULT BIKES (X12)
-    - CUSTOM 18FT RING / ICE BATH FACILITY
-
-#### Footer
-- 4-column grid
-- Col 1: FIIT.CO logo + studio tagline + est. date
-- Col 2: **EXPLORE** — Classes, Workshops, Our Story, Franchise
-- Col 3: **SUPPORT** — FAQ, Terms & Waiver, Contact Us, Privacy Policy
-- Col 4: **CONNECT** — Instagram, TikTok, YouTube, Newsletter
-- Column headings in red
+| Jason Battiste | Owner & Founder | Former Canadian Super Middleweight Kickboxing Champion, 35+ years experience |
+| Sarah Green | Trainer | Certified group fitness, kickboxing, TRX, yoga. ~20 years experience |
+| Tyrone Warner | Yoga Instructor | Hatha, Vinyasa, and Yin traditions. Mindfulness + mobility focus |
+| Nick Radionov | Boxing Academy Coach | Boxing Ontario Level 3, former Ukrainian National Olympic Team, 2x World Kickboxing Champion |
 
 ---
 
-### 3.2 Booking Confirmation (`/site/booking`)
+### 3.3 Programs (`/site/programs`)
 
-**Purpose:** Confirm a booked session and reduce no-shows.
+**Purpose:** Show the full range of training options. Drive Mindbody signups.
 
-**Sections:**
-- Green checkmark icon + "Booking Confirmed" heading
-- Booking details card:
-  - Class name, date/time, trainer, location, confirmation number
-- What to bring checklist (gloves, hand wraps, water, towel)
-- Cancellation policy (24hr notice required)
-- Action buttons: Add to Calendar / Book Another Session / Go to Dashboard
-- Recommended classes section (3 cards)
-
----
-
-### 3.3 Trainer Profile (`/site/trainers/[slug]`)
-
-**Supported slugs:** `jason-battiste`, `matt-makar`
-
-**Sections:**
-- Full-bleed hero image (grayscale) with name overlay
-- Stats bar: Years Experience / Clients Trained / Titles / Classes/Week
-- Bio paragraph
-- Philosophy blockquote (red left border)
-- Specialisations (tag chips)
-- Certifications list
-- Weekly schedule panel with per-slot Book CTA
-
----
-
-### 3.4 Class Detail (`/site/classes/[slug]`)
-
-**Supported slugs:** `heavy-bag-smash`, `ring-technicals`
-
-**Sections:**
-- Hero with category / tier / duration badges
-- Class description
-- What you get (bullet list)
-- Ideal for (tag chips)
-- Equipment needed (grid)
-- Interactive slot picker — click slot to select, enables Confirm button
-- Trainer teaser with link to trainer profile
-
----
-
-### 3.5 Member Dashboard (`/site/member`)
-
-**Purpose:** Returning member's personal hub.
-
-**Sections:**
-- Stats grid: Sessions Attended / Current Streak / Total Hours / Remaining Sessions
-- Three-tab interface:
-  - **Upcoming** — next booked sessions with class/time/trainer/cancel option
-  - **History** — past sessions with ATTENDED / NO-SHOW badge
-  - **Membership** — current plan card, guest passes, referral code
-
----
-
-### 3.6 Onboarding Wizard (`/site/onboarding`)
-
-**Purpose:** Guide a new visitor to the right membership plan.
-
-**Steps:**
-
-| Step | Content |
+**Programs:**
+| Program | Description |
 |---|---|
-| 0 | Welcome screen + studio stats (1,200+ members, 15 classes/week, etc.) |
-| 1 | Goal selection: Fitness / Competition / Stress Relief / Weight Loss |
-| 2 | Experience level: Complete Beginner / Some Experience / Trained Before / Competitive |
-| 3 | Preferred time (Morning/Afternoon/Evening) + days (multi-select Mon–Sun) |
-| 4 | Personalised plan recommendation based on goal + level |
+| Group Training | Group fitness classes. Expert coaching, variety, community motivation |
+| Personal Training | One-on-one. Customized focus on form, technique, mental toughness |
+| Small Group Personal Training | Up to 6 participants. Individualized + group support |
+| FIIT Co Boxing Academy | 3-tier structured boxing: Level 1 (Foundation) / Level 2 (Development) / Level 3 (Competition) |
+| Fight Training for Kids & Teens | Youth boxing ages 12–17. Confidence, discipline, fitness |
+| Sports Team Training | Customized athletic programs for team development |
 
-- Progress bar animates across steps
-- Plan recommendation logic:
-  - Fitness + Beginner → Single Fight (try it first)
-  - Competition + Any → Unlimited FIIT
-  - Stress Relief → Unlimited FIIT
-  - Weight Loss + Experienced → 10 Session Pack
+**Each program card:** Name, description, who it's for, CTA → Mindbody
 
 ---
 
-## 4. Design System
+### 3.4 Studio Info (`/site/studio`)
+
+**Purpose:** Showcase the facility. Show classes, pricing, and hours.
+
+**Sections:**
+| Section | Content |
+|---|---|
+| Hero | "The Space" — studio photography |
+| Classes | Full class list with descriptions |
+| Pricing | All tiers displayed clearly with Mindbody CTA |
+| Schedule | Static schedule or link to Mindbody schedule view |
+| Location + Hours | Map embed, address, phone, hours |
+
+**Classes:**
+- FIIT Endure (interval/stamina)
+- FIIT Hybrid (boxing + functional stations)
+- FIIT Lift (strength/muscle building)
+- Boxing Pad Work & Bag Work
+- Muay Thai Kickboxing
+- FIIT Caveman Circuit
+- Yin Yoga
+- Boxing Academy (Levels 1–3)
+- Teens Boxing (ages 12–17)
+
+**Pricing:**
+| Pass | Price | Expiry |
+|---|---|---|
+| 2-Week Trial | $49.99 | — |
+| 5 Class Pass | $125 | 2 months |
+| 10 Class Pass | $239 | 4 months |
+| 20 Class Pass | $425 | 6 months |
+| Monthly Unlimited | $179/mo | — |
+| Boxing Academy 5 | $135 | 2 months |
+| Boxing Academy 10 | $220 | 3 months |
+| Boxing Academy 20 | $400 | 6 months |
+
+All pricing CTAs → Mindbody
+
+---
+
+### 3.5 Blog (`/site/blog` + `/site/blog/[slug]`)
+
+**Purpose:** Content marketing. SEO. Community voice.
+
+**Blog listing page:** Grid of post cards (title, date, category, excerpt, thumbnail)
+**Individual post page:** Full article with author, date, category, related posts
+
+**Phase 1:** Static — posts hardcoded as data files
+**Phase 2:** Convex-backed CMS editable by staff
+
+---
+
+## 4. Guest Pass Feature
+
+### 4.1 Website Flow (Public — No Login)
+
+A "Guest Pass" CTA on the website (Homepage and Programs page) opens a modal popup.
+
+**Modal Form Fields:**
+- Member First Name
+- Member Phone Number
+- Guest First Name
+- Guest Phone Number
+
+**On Submit:**
+1. Validate member exists in Convex by phone number
+2. Check member's monthly guest pass count (max allowed per plan)
+3. If eligible: create guest pass record with status `pending`
+4. Show confirmation: "Your guest pass has been submitted. Have [Guest Name] give their name at the front desk on arrival."
+5. If not eligible: show reason (e.g. "Monthly guest pass limit reached")
+
+**Convex mutation:** `guestPasses.create`
+
+---
+
+### 4.2 Front Desk Tool (Internal — Staff Only)
+
+New tab in the class management app: **Guest Passes**
+
+**Features:**
+| Feature | Description |
+|---|---|
+| Search by guest | Find passes by guest name or guest phone |
+| Search by member | Find all passes issued by a member |
+| View pass list | Table: member name, guest name, date issued, status |
+| Redeem pass | Mark as `redeemed` — logs timestamp |
+| Create walk-in pass | Staff creates a pass on the spot at front desk |
+| Status badges | PENDING / REDEEMED / EXPIRED |
+
+**Convex queries:** `guestPasses.search`, `guestPasses.list`, `guestPasses.redeem`, `guestPasses.createWalkIn`
+
+---
+
+### 4.3 Guest Pass Convex Schema
+
+```ts
+guestPasses: defineTable({
+  memberFirstName:  v.string(),
+  memberPhone:      v.string(),
+  guestFirstName:   v.string(),
+  guestPhone:       v.string(),
+  status:           v.union(v.literal("pending"), v.literal("redeemed"), v.literal("expired")),
+  createdAt:        v.number(),
+  redeemedAt:       v.optional(v.number()),
+  monthKey:         v.string(),   // "YYYY-MM" for monthly limit tracking
+  createdBy:        v.union(v.literal("website"), v.literal("front-desk")),
+})
+```
+
+---
+
+## 5. Referral Feature
+
+### 5.1 Website Flow (Public — No Login)
+
+A "Refer a Contender" CTA on the website (Homepage banner + Programs page) opens a modal popup.
+
+**Modal Form Fields:**
+- Referrer First Name
+- Referrer Phone Number
+- Friend's First Name
+- Friend's Phone Number
+
+**On Submit:**
+1. Validate referrer exists in Convex by phone number
+2. Check for duplicate referral (same referrer + friend phone)
+3. Create referral record with status `pending`
+4. Show confirmation: "Your referral has been submitted. When [Friend Name] signs up, you'll receive your 50% discount automatically."
+
+**Convex mutation:** `referrals.create`
+
+---
+
+### 5.2 Front Desk Tool — Referrals Tab (Internal)
+
+Referral records viewable and manageable alongside guest passes in the internal tool.
+
+**Features:**
+| Feature | Description |
+|---|---|
+| View referrals | Table: referrer name, friend name, date submitted, status |
+| Search | By referrer or friend name/phone |
+| Mark completed | When referred friend signs up — changes status to `completed` |
+| Mark rewarded | When referrer discount applied — changes status to `rewarded` |
+| Status badges | PENDING / COMPLETED / REWARDED |
+
+---
+
+### 5.3 Referral Convex Schema
+
+```ts
+referrals: defineTable({
+  referrerFirstName:  v.string(),
+  referrerPhone:      v.string(),
+  friendFirstName:    v.string(),
+  friendPhone:        v.string(),
+  status:             v.union(v.literal("pending"), v.literal("completed"), v.literal("rewarded")),
+  createdAt:          v.number(),
+  completedAt:        v.optional(v.number()),
+  rewardedAt:         v.optional(v.number()),
+})
+```
+
+---
+
+## 6. Design System
 
 ### Colours
 | Token | Value | Usage |
 |---|---|---|
-| `--red` | `#D92B2B` | CTAs, headings, labels, accents |
-| `--black` | `#000000` | Page background |
-| `--dark` | `#1A1A1A` | Card backgrounds, info bar |
-| `--white` | `#FFFFFF` | Primary text |
-| `--muted` | `rgba(255,255,255,0.55)` | Secondary text |
-| `--border` | `rgba(255,255,255,0.15)` | Card borders |
+| Red | `#D92B2B` | CTAs, headings, section labels, accents |
+| Black | `#000000` | Page background |
+| Dark | `#1A1A1A` | Card backgrounds, info bar |
+| White | `#FFFFFF` | Primary text |
+| Muted | `rgba(255,255,255,0.55)` | Secondary text |
+| Border | `rgba(255,255,255,0.15)` | Card borders (default) |
 
 ### Typography
 | Font | Variable | Usage |
 |---|---|---|
-| Oswald | `--font-oswald` | All headings, prices, hero text, CTAs |
-| Chakra Petch | `--font-chakra` | Section labels, nav links, tags, small UI |
+| Oswald | `--font-oswald` | All headings, prices, hero, CTAs, logo |
+| Chakra Petch | `--font-chakra` | Section labels, nav, tags, small UI |
 | Inter | `--font-inter` | Body copy, descriptions |
 
+### Modals
+- Dark overlay background (`rgba(0,0,0,0.85)`)
+- Modal panel: `#1A1A1A` background, red top border (4px)
+- Form inputs: `#000` background, `rgba(255,255,255,0.15)` border
+- Submit button: red filled, Oswald uppercase
+- Close button: top right corner
+
 ### Section Labels
-All sections use a consistent label pattern:
 ```
 —— SECTION NAME
 ```
-Red 28px horizontal rule + uppercase Chakra Petch text, 10px, letter-spacing 0.2em.
-
-### Spacing
-- Section padding: `7rem 4rem` (desktop)
-- Card gap: `1–1.5rem`
-- Section gap between pillars: `5rem`
+28px red dash + Chakra Petch, 10px, uppercase, letter-spacing 0.2em
 
 ### Buttons
 | Type | Style |
 |---|---|
-| Primary CTA | Red background, white text, Oswald bold, uppercase |
-| Secondary CTA | White/transparent border, white text |
-| Outlined dark | `rgba(255,255,255,0.45)` border, transparent bg |
+| Primary | Red background, white text, Oswald bold uppercase |
+| Secondary | White outline, transparent bg |
+| External (Mindbody) | Red filled + ↗ icon to indicate new tab |
 
 ---
 
-## 5. Data & Content
+## 7. Data & Content
 
-### Phase 1 (Current)
-All content is hardcoded in each page component. Trainer data, class data, pricing, and equipment are static arrays/objects defined at the top of each file.
+### Phase 1 — Static
+All page content (programs, classes, pricing, trainer bios) hardcoded in components.
+Guest passes and referrals stored in Convex.
 
-### Phase 2
-Content to be migrated to Convex database with CMS-style admin interface, enabling Jason / studio staff to update schedules, trainers, and pricing without a code deploy.
+### Phase 2 — CMS
+Blog posts migrated to Convex. Staff-editable via admin interface.
+Studio info and pricing editable without code deploys.
 
 ---
 
-## 6. Integrations
+## 8. Integrations
 
 | Service | Phase | Purpose |
 |---|---|---|
-| Mindbody | Phase 2 | Live class schedule, booking, payment processing |
-| Google Calendar API | Phase 2 | "Add to Calendar" on booking confirmation |
-| Instagram API | Phase 2 | Feed embed on homepage |
-| Convex | Phase 2 | Dynamic content management |
+| Mindbody | Live (external link) | Booking, membership, payment |
+| Convex | Phase 1 | Guest passes + referrals database |
+| Google Calendar API | Phase 2 | Add to calendar on confirmations |
+| Instagram API | Phase 2 | Feed embed |
+| Analytics | Phase 2 | Google Analytics or Plausible |
 
 ---
 
-## 7. Non-Functional Requirements
+## 9. Non-Functional Requirements
 
 | Requirement | Target |
 |---|---|
@@ -291,19 +356,18 @@ Content to be migrated to Convex database with CMS-style admin interface, enabli
 | First Contentful Paint | < 1.5s |
 | Mobile breakpoints | 375px, 768px, 1280px |
 | Browser support | Chrome, Safari, Firefox (last 2 versions) |
-| Image loading | Lazy load all below-fold images |
+| Modal accessibility | Focus trap, ESC to close, ARIA labels |
 
 ---
 
-## 8. Open Items / Phase 2 Backlog
+## 10. Phase 2 Backlog
 
-- [ ] Replace Pexels placeholder images with real studio photography
-- [ ] Wire booking form to Mindbody API
-- [ ] Add member login / session persistence
-- [ ] Live schedule pull from Mindbody
-- [ ] Mobile responsive breakpoints (currently desktop-first)
-- [ ] Kids Academy and Personal Training pricing content
-- [ ] Email confirmation on booking
-- [ ] Referral code generation and tracking
-- [ ] SEO metadata per page (og:image, description, etc.)
-- [ ] Analytics (Google Analytics or Plausible)
+- [ ] Real studio photography (replace Pexels placeholders)
+- [ ] Blog CMS via Convex
+- [ ] Mobile responsive breakpoints
+- [ ] SEO metadata per page
+- [ ] Analytics integration
+- [ ] Mindbody webhook → auto-complete referrals when friend signs up
+- [ ] Monthly guest pass limit enforcement per membership tier
+- [ ] Email/SMS confirmation on guest pass + referral submission
+- [ ] Trainer profiles for all 4 trainers (currently 2 slugs built)
