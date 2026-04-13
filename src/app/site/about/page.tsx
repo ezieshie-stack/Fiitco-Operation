@@ -1,6 +1,6 @@
 import Link from "next/link";
+import styles from "../site.module.css";
 
-const RED = "#D92B2B";
 const MINDBODY_URL = "https://www.mindbodyonline.com/explore/deals/fiit-co/intro-offer-10377";
 
 const TRAINERS = [
@@ -34,128 +34,132 @@ const TRAINERS = [
   },
 ];
 
-function SectionLabel({ text }: { text: string }) {
-  return (
-    <p style={{
-      fontFamily: "var(--font-chakra)", fontSize: "10px", letterSpacing: "0.2em",
-      textTransform: "uppercase", color: RED, marginBottom: "2.5rem",
-      display: "flex", alignItems: "center", gap: 10,
-    }}>
-      <span style={{ width: 28, height: 1, background: RED, display: "inline-block", flexShrink: 0 }} />
-      {text}
-    </p>
-  );
-}
+const EQUIPMENT = [
+  "Heavy Bags (×30)", "Speed Bags (×5)", "Olympic Squat Rack",
+  "Assault Bikes (×12)", "Custom 18ft Ring", "Ice Bath Facility",
+];
 
 export default function AboutPage() {
   return (
-    <div style={{ background: "#000", color: "#fff" }}>
+    <main>
 
-      {/* ── HERO ──────────────────────────────────────────────── */}
-      <section style={{
-        minHeight: "60vh", position: "relative",
-        display: "flex", flexDirection: "column", justifyContent: "flex-end",
-        background: "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.9)), url('https://images.pexels.com/photos/4761779/pexels-photo-4761779.jpeg?auto=compress&cs=tinysrgb&w=1260') center/cover no-repeat",
-        padding: "0 4rem 5rem",
-      }}>
-        <SectionLabel text="Our Story" />
-        <h1 style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "clamp(3rem, 8vw, 7rem)", textTransform: "uppercase", lineHeight: 0.9, maxWidth: 700 }}>
-          MEET THE<br /><span style={{ color: RED }}>FIIT CO</span><br />TEAM
+      {/* ── HERO ───────────────────────────────────────────────────── */}
+      <section className={styles.hero}>
+        <p className={styles.label}>Our Story</p>
+        <h1 className={styles.headlineXl}>
+          THE PEOPLE<br />BEHIND THE<br />
+          <span className={styles.accent}>GLOVES.</span>
         </h1>
-      </section>
-
-      {/* ── MISSION ───────────────────────────────────────────── */}
-      <section style={{ padding: "7rem 4rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "start" }}>
-        <div>
-          <SectionLabel text="Who We Are" />
-          <h2 style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "clamp(2rem, 3.5vw, 3.5rem)", textTransform: "uppercase", lineHeight: 1, marginBottom: "2rem" }}>
-            A COMMUNITY<br />WHERE EVERYONE<br /><span style={{ color: RED }}>THRIVES</span>
-          </h2>
-        </div>
-        <div style={{ paddingTop: "3.5rem" }}>
-          <p style={{ fontSize: "1rem", lineHeight: 1.85, color: "rgba(255,255,255,0.7)", marginBottom: "1.5rem" }}>
-            FIIT Co. was founded in 2015 by Jason Battiste with a simple mission: combine expert fight training with a dynamic and welcoming environment where every person — regardless of background or fitness level — can grow.
-          </p>
-          <p style={{ fontSize: "1rem", lineHeight: 1.85, color: "rgba(255,255,255,0.7)", marginBottom: "1.5rem" }}>
-            We&apos;re located at the heart of Toronto&apos;s east end. Our 6,000 sq ft facility houses professional-grade heavy bags, a full competition ring, functional training equipment, and recovery facilities.
-          </p>
-          <p style={{ fontSize: "1rem", lineHeight: 1.85, color: "rgba(255,255,255,0.7)" }}>
-            We don&apos;t play boxing — we train boxers. And we believe the discipline, resilience, and confidence you build here follows you into every part of your life.
-          </p>
+        <div className={styles.heroBottom}>
+          <p className={styles.heroAddress}>Founded 2015 &nbsp;·&nbsp; Leslieville, Toronto</p>
+          <a href={MINDBODY_URL} target="_blank" rel="noopener noreferrer" className={styles.btnRed}>
+            Book Free Class ↗
+          </a>
         </div>
       </section>
 
-      {/* ── TRAINERS ──────────────────────────────────────────── */}
-      <section style={{ padding: "2rem 4rem 7rem" }}>
-        <SectionLabel text="The Team" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "3rem" }}>
-          {TRAINERS.map((t) => (
-            <div key={t.name} style={{ display: "grid", gridTemplateColumns: "180px 1fr", gap: "2rem", alignItems: "start" }}>
-              <div style={{ aspectRatio: "3/4", overflow: "hidden", background: "#111", flexShrink: 0 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={t.img} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(1)", display: "block" }} />
-              </div>
-              <div>
-                <p style={{ fontFamily: "var(--font-chakra)", fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.15em", color: RED, marginBottom: "0.4rem" }}>{t.role}</p>
-                <h3 style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "1.8rem", textTransform: "uppercase", lineHeight: 1, marginBottom: "1rem" }}>{t.name}</h3>
-                <p style={{ fontSize: "0.875rem", lineHeight: 1.8, color: "rgba(255,255,255,0.6)", marginBottom: "1.25rem" }}>{t.bio}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                  {t.tags.map((tag) => (
-                    <span key={tag} style={{ fontFamily: "var(--font-chakra)", fontSize: "0.55rem", textTransform: "uppercase", letterSpacing: "0.1em", border: "1px solid rgba(255,255,255,0.2)", padding: "0.3rem 0.7rem", color: "rgba(255,255,255,0.5)" }}>{tag}</span>
-                  ))}
-                </div>
-              </div>
+      {/* ── MISSION ────────────────────────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.container}>
+          <div className={styles.twoColGrid}>
+            <div>
+              <p className={styles.label}>Who We Are</p>
+              <h2 className={styles.headlineLg}>
+                A COMMUNITY<br />WHERE EVERYONE<br />
+                <span className={styles.accent}>THRIVES.</span>
+              </h2>
             </div>
-          ))}
+            <div style={{ paddingTop: "3rem" }}>
+              <p className={styles.body} style={{ marginBottom: "1.5rem" }}>
+                FIIT Co. was founded in 2015 by Jason Battiste with a simple mission: combine expert fight training with a dynamic and welcoming environment where every person — regardless of background or fitness level — can grow.
+              </p>
+              <p className={styles.body} style={{ marginBottom: "1.5rem" }}>
+                We&apos;re located at the heart of Toronto&apos;s east end. Our 6,000 sq ft facility houses professional-grade heavy bags, a full competition ring, functional training equipment, and dedicated recovery facilities.
+              </p>
+              <p className={styles.body}>
+                We don&apos;t play boxing — we train boxers. The discipline, resilience, and confidence you build here follows you into every part of your life.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── OUR SPACE ─────────────────────────────────────────── */}
-      <section style={{ padding: "7rem 4rem", background: "#0a0a0a" }}>
-        <SectionLabel text="Our Space" />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "center" }}>
-          <div>
-            <h2 style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "clamp(2rem, 3.5vw, 3.5rem)", textTransform: "uppercase", lineHeight: 1, marginBottom: "2rem" }}>
-              6,000 SQ FT<br />OF SERIOUS<br /><span style={{ color: RED }}>TRAINING SPACE</span>
-            </h2>
-            <p style={{ fontSize: "0.95rem", lineHeight: 1.85, color: "rgba(255,255,255,0.6)", marginBottom: "1.5rem" }}>
-              We built the studio around what serious training actually requires. Professional heavy bags, a custom 18ft competition ring, speed bags, assault bikes, squat racks, and a full ice bath facility.
-            </p>
-            <p style={{ fontSize: "0.95rem", lineHeight: 1.85, color: "rgba(255,255,255,0.6)" }}>
-              Industrial grit meets boutique luxury. Whether you&apos;re a first-timer or a competitive boxer, you&apos;ll find the equipment and space to do the work.
-            </p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-            {["HEAVY BAGS (X30)", "SPEED BAGS (X5)", "OLYMPIC SQUAT RACK", "ASSAULT BIKES (X12)", "CUSTOM 18FT RING", "ICE BATH FACILITY"].map((item) => (
-              <div key={item} style={{ background: "#1a1a1a", padding: "2.5rem 1rem", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-                <p style={{ fontFamily: "var(--font-chakra)", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(255,255,255,0.75)" }}>{item}</p>
+      {/* ── TEAM ───────────────────────────────────────────────────── */}
+      <section className={styles.sectionDark}>
+        <div className={styles.container}>
+          <p className={styles.label}>The Team</p>
+          <div className={styles.teamGrid}>
+            {TRAINERS.map((t) => (
+              <div key={t.name} className={styles.trainerCard}>
+                <div className={styles.trainerImg}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={t.img} alt={t.name} />
+                </div>
+                <p className={styles.trainerRole}>{t.role}</p>
+                <h3 className={styles.trainerName}>{t.name}</h3>
+                <p className={styles.trainerBio}>{t.bio}</p>
+                <div className={styles.trainerTags}>
+                  {t.tags.map((tag) => <span key={tag} className={styles.tag}>{tag}</span>)}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ───────────────────────────────────────────────── */}
-      <section style={{ padding: "7rem 4rem", textAlign: "center" }}>
-        <h2 style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "clamp(2.5rem, 5vw, 5rem)", textTransform: "uppercase", marginBottom: "1rem" }}>
-          TRY US OUT<br /><span style={{ color: RED }}>FOR FREE</span>
-        </h2>
-        <p style={{ fontFamily: "var(--font-chakra)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(255,255,255,0.5)", marginBottom: "2.5rem" }}>
-          First class on us. No commitment.
-        </p>
-        <a href={MINDBODY_URL} target="_blank" rel="noopener noreferrer" style={{
-          display: "inline-block", background: RED, color: "#fff", padding: "1rem 3rem",
-          fontFamily: "var(--font-oswald)", fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "0.1em", fontSize: "1rem", textDecoration: "none",
-        }}>Book A Free Class ↗</a>
+      {/* ── OUR SPACE ──────────────────────────────────────────────── */}
+      <section className={styles.section}>
+        <div className={styles.container}>
+          <div className={styles.twoColGrid}>
+            <div>
+              <p className={styles.label}>Our Space</p>
+              <h2 className={styles.headlineLg}>
+                6,000 SQ FT<br />OF SERIOUS<br />
+                <span className={styles.accent}>TRAINING.</span>
+              </h2>
+              <p className={styles.body} style={{ marginTop: "2rem", marginBottom: "1.25rem" }}>
+                We built the studio around what serious training actually requires. Professional heavy bags, a custom 18ft competition ring, speed bags, assault bikes, squat racks, and a full ice bath facility.
+              </p>
+              <p className={styles.body}>
+                Industrial grit meets boutique quality. Whether you&apos;re a first-timer or a competitive boxer, you&apos;ll have everything you need to do the work.
+              </p>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "rgba(255,255,255,0.07)", alignSelf: "start" }}>
+              {EQUIPMENT.map((item) => (
+                <div key={item} style={{ background: "#000", padding: "2.25rem 1.5rem", display: "flex", alignItems: "center" }}>
+                  <p className={styles.statLabel} style={{ lineHeight: 1.5 }}>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ── FOOTER ────────────────────────────────────────────── */}
-      <footer style={{ padding: "4rem", borderTop: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-        <p style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "1.5rem", letterSpacing: "-1px" }}>FIIT<span style={{ color: RED }}>.CO</span></p>
-        <p style={{ fontFamily: "var(--font-chakra)", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.35)" }}>1047 Gerrard St E, Toronto · (416) 565-9300 · info@fiitco.ca</p>
-        <Link href="/site" style={{ fontFamily: "var(--font-chakra)", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.14em", color: RED, textDecoration: "none" }}>← Back to Home</Link>
+      {/* ── FREE CLASS CTA ─────────────────────────────────────────── */}
+      <section className={styles.sectionDark}>
+        <div className={styles.container} style={{ textAlign: "center" }}>
+          <p className={styles.label} style={{ justifyContent: "center" }}>Get Started</p>
+          <h2 className={styles.headlineLg} style={{ marginBottom: "1rem" }}>
+            FIRST CLASS<br /><span className={styles.accent}>ON US.</span>
+          </h2>
+          <p className={styles.body} style={{ maxWidth: 480, margin: "0 auto 2.5rem" }}>
+            No commitment, no pressure. Come in, try a class, and see if FIIT Co. is for you.
+          </p>
+          <a href={MINDBODY_URL} target="_blank" rel="noopener noreferrer" className={styles.btnRed}>
+            Book a Free Class ↗
+          </a>
+        </div>
+      </section>
+
+      {/* ── FOOTER ─────────────────────────────────────────────────── */}
+      <footer className={styles.footer}>
+        <p className={styles.footerLogo}>FIIT<span className={styles.accent}>.CO</span></p>
+        <p className={styles.footerCenter}>1047 Gerrard St E &nbsp;·&nbsp; (416) 565-9300 &nbsp;·&nbsp; info@fiitco.ca</p>
+        <div className={styles.footerRight}>
+          <Link href="/site" className={styles.footerLink}>← Back to Home</Link>
+        </div>
       </footer>
-    </div>
+
+    </main>
   );
 }

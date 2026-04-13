@@ -1,6 +1,6 @@
 import Link from "next/link";
+import styles from "../../site.module.css";
 
-const RED = "#D92B2B";
 const MINDBODY_URL = "https://www.mindbodyonline.com/explore/deals/fiit-co/intro-offer-10377";
 
 const POSTS: Record<string, { category: string; date: string; author: string; readTime: string; title: string; body: string[] }> = {
@@ -76,60 +76,70 @@ const POSTS: Record<string, { category: string; date: string; author: string; re
   },
 };
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = POSTS[params.slug];
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = POSTS[slug];
 
   if (!post) {
     return (
-      <div style={{ background: "#000", color: "#fff", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "2rem" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "80vh", textAlign: "center", padding: "2rem" }}>
         <div>
-          <p style={{ fontFamily: "var(--font-chakra)", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.2em", color: RED, marginBottom: "1rem" }}>404</p>
-          <h1 style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "3rem", textTransform: "uppercase", marginBottom: "1.5rem" }}>Article Not Found</h1>
-          <Link href="/site/blog" style={{ fontFamily: "var(--font-chakra)", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.14em", color: RED, textDecoration: "none", borderBottom: `1px solid ${RED}`, paddingBottom: "2px" }}>← Back to Blog</Link>
+          <p className={styles.label} style={{ justifyContent: "center" }}>404</p>
+          <h1 className={styles.headlineLg} style={{ marginBottom: "2rem" }}>Article Not Found</h1>
+          <Link href="/site/blog" className={styles.footerLink}>← Back to Blog</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#000", color: "#fff" }}>
+    <main>
 
-      {/* ── HEADER ────────────────────────────────────────────── */}
-      <section style={{ padding: "10rem 4rem 4rem", maxWidth: 800, margin: "0 auto" }}>
+      {/* ── HEADER ─────────────────────────────────────────────────── */}
+      <div className={styles.articleHeader}>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginBottom: "2rem" }}>
-          <span style={{ fontFamily: "var(--font-chakra)", fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.15em", background: RED, color: "#fff", padding: "0.3rem 0.7rem" }}>{post.category}</span>
-          <span style={{ fontFamily: "var(--font-chakra)", fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "rgba(255,255,255,0.35)" }}>{post.readTime}</span>
+          <span style={{ fontFamily: "var(--font-chakra)", fontSize: "0.58rem", textTransform: "uppercase" as const, letterSpacing: "0.18em", background: "#D92B2B", color: "#fff", padding: "0.3rem 0.7rem" }}>
+            {post.category}
+          </span>
+          <span className={styles.dim} style={{ fontFamily: "var(--font-chakra)", fontSize: "0.58rem", textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>
+            {post.readTime}
+          </span>
         </div>
-        <h1 style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "clamp(2.5rem, 5vw, 4.5rem)", textTransform: "uppercase", lineHeight: 1, marginBottom: "2rem" }}>{post.title}</h1>
-        <div style={{ display: "flex", gap: "2rem", fontFamily: "var(--font-chakra)", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", paddingBottom: "2.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-          <span>{post.date}</span>
-          <span>By {post.author}</span>
+        <h1 className={styles.headlineLg} style={{ marginBottom: "2rem" }}>{post.title}</h1>
+        <div style={{ display: "flex", gap: "2rem" }}>
+          <span className={styles.blogMeta}>{post.date}</span>
+          <span className={styles.blogMeta}>By {post.author}</span>
         </div>
-      </section>
+        <hr className={styles.articleDivider} />
+      </div>
 
-      {/* ── BODY ──────────────────────────────────────────────── */}
-      <article style={{ padding: "0 4rem 7rem", maxWidth: 800, margin: "0 auto" }}>
+      {/* ── BODY ───────────────────────────────────────────────────── */}
+      <article className={styles.articleBody}>
         {post.body.map((paragraph, i) => (
-          <p key={i} style={{ fontSize: "1.05rem", lineHeight: 1.9, color: "rgba(255,255,255,0.75)", marginBottom: "1.75rem" }}>{paragraph}</p>
+          <p key={i}>{paragraph}</p>
         ))}
 
-        <div style={{ marginTop: "4rem", padding: "3rem", background: "#0a0a0a", borderLeft: `4px solid ${RED}` }}>
-          <p style={{ fontFamily: "var(--font-chakra)", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.15em", color: RED, marginBottom: "1rem" }}>Ready to Train?</p>
-          <p style={{ fontSize: "0.95rem", lineHeight: 1.7, color: "rgba(255,255,255,0.65)", marginBottom: "1.5rem" }}>First class is on us. No commitment, no pressure.</p>
-          <a href={MINDBODY_URL} target="_blank" rel="noopener noreferrer" style={{
-            display: "inline-block", background: RED, color: "#fff", padding: "0.85rem 2rem",
-            fontFamily: "var(--font-oswald)", fontWeight: 700, textTransform: "uppercase",
-            letterSpacing: "0.1em", fontSize: "0.85rem", textDecoration: "none",
-          }}>Book A Free Class ↗</a>
+        <div className={styles.ctaBox}>
+          <p className={styles.label}>Ready to Train?</p>
+          <p className={styles.body} style={{ marginBottom: "1.5rem" }}>
+            First class is on us. No commitment, no pressure.
+          </p>
+          <a href={MINDBODY_URL} target="_blank" rel="noopener noreferrer" className={styles.btnRed}>
+            Book a Free Class ↗
+          </a>
         </div>
       </article>
 
-      {/* ── FOOTER ────────────────────────────────────────────── */}
-      <footer style={{ padding: "4rem", borderTop: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-        <p style={{ fontFamily: "var(--font-oswald)", fontWeight: 700, fontSize: "1.5rem", letterSpacing: "-1px" }}>FIIT<span style={{ color: RED }}>.CO</span></p>
-        <Link href="/site/blog" style={{ fontFamily: "var(--font-chakra)", fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.14em", color: RED, textDecoration: "none" }}>← Back to Blog</Link>
+      {/* ── FOOTER ─────────────────────────────────────────────────── */}
+      <footer className={styles.footer}>
+        <p className={styles.footerLogo}>FIIT<span className={styles.accent}>.CO</span></p>
+        <p className={styles.footerCenter}>1047 Gerrard St E, Toronto</p>
+        <div className={styles.footerRight}>
+          <Link href="/site/blog" className={styles.footerLink}>← Back to Blog</Link>
+        </div>
       </footer>
-    </div>
+
+    </main>
   );
 }
 
