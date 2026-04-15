@@ -163,6 +163,23 @@ export default defineSchema({
     notes: v.optional(v.string()),
   }).index("by_instructorId", ["instructorId"]),
 
+  // Date-specific overrides on top of the recurring `availability` default.
+  // `type = "unavailable"` removes a window (or the whole day if no time given).
+  // `type = "available"` adds a window that the standing default does not cover
+  // (e.g. picking up a sub shift).
+  availabilityExceptions: defineTable({
+    instructorId: v.string(),
+    instructorName: v.string(),
+    date: v.string(),              // YYYY-MM-DD, single calendar date
+    type: v.string(),              // "unavailable" | "available"
+    startTime: v.optional(v.string()),  // HH:MM; omitted = whole day
+    endTime: v.optional(v.string()),
+    reason: v.optional(v.string()),
+    createdAt: v.string(),
+  })
+    .index("by_instructorId", ["instructorId"])
+    .index("by_date", ["date"]),
+
   pendingChanges: defineTable({
     tableName: v.string(),        // e.g. "weeklySchedule", "classes", "exercises"
     action: v.string(),           // "add" | "update" | "delete"

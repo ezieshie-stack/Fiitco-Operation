@@ -13,6 +13,7 @@ export const getWeeklySchedule= query({ args: {}, handler: async (ctx) => ctx.db
 export const getClassPrograms = query({ args: {}, handler: async (ctx) => ctx.db.query("classPrograms").collect() });
 export const getDeliveryLog   = query({ args: {}, handler: async (ctx) => ctx.db.query("deliveryLog").collect() });
 export const getAvailability  = query({ args: {}, handler: async (ctx) => ctx.db.query("availability").collect() });
+export const getAvailabilityExceptions = query({ args: {}, handler: async (ctx) => ctx.db.query("availabilityExceptions").collect() });
 export const getClientJourneys= query({ args: {}, handler: async (ctx) => ctx.db.query("clientJourneys").collect() });
 
 export const getScheduleByWeek = query({

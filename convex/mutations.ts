@@ -573,6 +573,30 @@ export const deleteAvailability = mutation({
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
+// ── Availability Exceptions ─────────────────────────────────────────────────
+// Date-specific overrides on top of the recurring `availability` default.
+export const addAvailabilityException = mutation({
+  args: {
+    instructorId: v.string(),
+    instructorName: v.string(),
+    date: v.string(),
+    type: v.string(),              // "unavailable" | "available"
+    startTime: v.optional(v.string()),
+    endTime: v.optional(v.string()),
+    reason: v.optional(v.string()),
+  },
+  handler: async (ctx, args) =>
+    ctx.db.insert("availabilityExceptions", {
+      ...args,
+      createdAt: new Date().toISOString(),
+    }),
+});
+
+export const deleteAvailabilityException = mutation({
+  args: { id: v.id("availabilityExceptions") },
+  handler: async (ctx, args) => ctx.db.delete(args.id),
+});
+
 // ── Force Reseed — clears all data and loads full Excel v4 dataset ─────────
 export const forceReseed = mutation({
   args: {},
@@ -582,6 +606,7 @@ export const forceReseed = mutation({
       "categories", "subcategories", "classes", "instructors", "tiers",
       "equipment", "pathways", "exercises", "weeklySchedule",
       "classPrograms", "deliveryLog", "clientJourneys", "availability",
+      "availabilityExceptions",
     ] as const) {
       const rows = await ctx.db.query(table).collect();
       for (const r of rows) await ctx.db.delete(r._id);
@@ -1037,6 +1062,103 @@ export const forceReseed = mutation({
         clientJourneys: clientJourneys.length,
         users: usersSeededCount,
       },
+    };
+  },
+});
+
+type ImportedWorkbookDataset = {
+  categories: Array<Record<string, unknown>>;
+  subcategories: Array<Record<string, unknown>>;
+  classes: Array<Record<string, unknown>>;
+  instructors: Array<Record<string, unknown>>;
+  tiers: Array<Record<string, unknown>>;
+  equipment: Array<Record<string, unknown>>;
+  pathways: Array<Record<string, unknown>>;
+  exercises: Array<Record<string, unknown>>;
+  weeklySchedule: Array<Record<string, unknown>>;
+  classPrograms: Array<Record<string, unknown>>;
+  deliveryLog: Array<Record<string, unknown>>;
+  clientJourneys: Array<Record<string, unknown>>;
+  availability: Array<Record<string, unknown>>;
+};
+
+async function clearTable(ctx: any, table: string) {
+  const rows = await ctx.db.query(table).collect();
+  for (const row of rows) {
+    await ctx.db.delete(row._id);
+  }
+  return rows.length;
+}
+
+function sanitizeForConvex<T>(value: T): T {
+  if (value === null || value === undefined) {
+    return undefined as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeForConvex(item)) as T;
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .flatMap(([key, item]) => {
+        const sanitized = sanitizeForConvex(item);
+        return sanitized === undefined ? [] : [[key, sanitized] as const];
+      });
+    return Object.fromEntries(entries) as T;
+  }
+  return value;
+}
+
+async function insertRows(ctx: any, table: string, rows: Array<Record<string, unknown>>) {
+  for (const row of rows) {
+    await ctx.db.insert(table, sanitizeForConvex(row));
+  }
+}
+
+export const importWorkbookData = mutation({
+  args: {
+    dataset: v.any(),
+    clearPendingChanges: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const dataset = args.dataset as ImportedWorkbookDataset;
+    const tables = [
+      "categories",
+      "subcategories",
+      "classes",
+      "instructors",
+      "tiers",
+      "equipment",
+      "pathways",
+      "exercises",
+      "weeklySchedule",
+      "classPrograms",
+      "deliveryLog",
+      "clientJourneys",
+      "availability",
+    ] as const;
+
+    const clearedCounts: Record<string, number> = {};
+    for (const table of tables) {
+      clearedCounts[table] = await clearTable(ctx, table);
+    }
+
+    let clearedPendingChanges = 0;
+    if (args.clearPendingChanges) {
+      clearedPendingChanges = await clearTable(ctx, "pendingChanges");
+    }
+
+    for (const table of tables) {
+      await insertRows(ctx, table, dataset[table] ?? []);
+    }
+
+    return {
+      message: "Workbook import complete",
+      clearedCounts,
+      insertedCounts: Object.fromEntries(
+        tables.map((table) => [table, dataset[table]?.length ?? 0]),
+      ),
+      preservedUsers: (await ctx.db.query("users").collect()).length,
+      clearedPendingChanges,
     };
   },
 });

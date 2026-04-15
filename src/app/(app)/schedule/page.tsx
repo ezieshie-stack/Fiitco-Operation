@@ -32,6 +32,97 @@ function addMinutes(t: string, mins: number) {
   return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 
+interface AvailabilityRow {
+  instructorId: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  available: boolean;
+}
+
+interface AvailabilityExceptionRow {
+  instructorId: string;
+  date: string;
+  type: string;                // "unavailable" | "available"
+  startTime?: string;
+  endTime?: string;
+  reason?: string;
+}
+
+function findAvailabilityConflict(
+  availability: AvailabilityRow[],
+  exceptions: AvailabilityExceptionRow[],
+  instructors: { instructorId: string; displayName: string }[],
+  instructorId: string,
+  date: string,
+  dayLabel: string,
+  startTime: string,
+  endTime: string,
+) {
+  if (!instructorId || !dayLabel) return null;
+
+  const ins = instructors.find((entry) => entry.instructorId === instructorId);
+  const displayName = ins?.displayName ?? "Instructor";
+
+  const requestedStart = timeToMinutes(startTime);
+  const requestedEnd = timeToMinutes(endTime);
+
+  // ── 1. Date-specific exceptions take precedence ─────────────────────────
+  const dayExceptions = exceptions.filter(
+    (e) => e.instructorId === instructorId && e.date === date,
+  );
+
+  // Unavailable exceptions → block if the requested window overlaps.
+  for (const ex of dayExceptions) {
+    if (ex.type !== "unavailable") continue;
+    // Whole-day unavailable (no start/end)
+    if (!ex.startTime || !ex.endTime) {
+      const reason = ex.reason ? ` (${ex.reason})` : "";
+      return `${displayName} is marked unavailable on ${date}${reason}`;
+    }
+    // Partial-day unavailable — block if it overlaps the requested window.
+    const exStart = timeToMinutes(ex.startTime);
+    const exEnd = timeToMinutes(ex.endTime);
+    if (requestedStart < exEnd && requestedEnd > exStart) {
+      const reason = ex.reason ? ` (${ex.reason})` : "";
+      return `${displayName} is marked unavailable ${ex.startTime}–${ex.endTime} on ${date}${reason}`;
+    }
+  }
+
+  // "Available" exception that fully covers the requested window → pass,
+  // even if the standing default would otherwise say no.
+  const coveringOverride = dayExceptions.find((ex) => {
+    if (ex.type !== "available" || !ex.startTime || !ex.endTime) return false;
+    return requestedStart >= timeToMinutes(ex.startTime) && requestedEnd <= timeToMinutes(ex.endTime);
+  });
+  if (coveringOverride) return null;
+
+  // ── 2. Fall back to the recurring standing default ──────────────────────
+  const dayRecords = availability.filter(
+    (entry) => entry.instructorId === instructorId && entry.dayOfWeek === dayLabel,
+  );
+
+  if (dayRecords.length === 0) {
+    return `No availability record for this instructor on ${dayLabel}`;
+  }
+
+  const matchingRecord = dayRecords.find((entry) => {
+    const entryStart = timeToMinutes(entry.startTime);
+    const entryEnd = timeToMinutes(entry.endTime);
+    return requestedStart >= entryStart && requestedEnd <= entryEnd;
+  });
+
+  if (!matchingRecord) {
+    return `No availability record for ${displayName} at ${startTime} on ${dayLabel}`;
+  }
+
+  if (!matchingRecord.available) {
+    return `${displayName} is marked unavailable at ${startTime} on ${dayLabel}`;
+  }
+
+  return null;
+}
+
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const CAT_STYLE: Record<string, { bg: string; color: string }> = {
@@ -57,13 +148,14 @@ interface SlotDoc {
 
 // ── Add Slot Modal ─────────────────────────────────────────────────────────
 function AddSlotModal({
-  date, dayLabel, classes, instructors, slotsOnDay, availability, onClose, onSave,
+  date, dayLabel, classes, instructors, slotsOnDay, availability, exceptions, onClose, onSave,
 }: {
   date: string; dayLabel: string;
   classes: { classId: string; name: string; categoryName: string; durationMinutes: number }[];
   instructors: { instructorId: string; displayName: string }[];
   slotsOnDay: SlotDoc[];
-  availability: { instructorId: string; dayOfWeek: string; available: boolean }[];
+  availability: AvailabilityRow[];
+  exceptions: AvailabilityExceptionRow[];
   onClose: () => void;
   onSave: (data: {
     classId: string; className: string; categoryName: string;
@@ -94,16 +186,16 @@ function AddSlotModal({
   }, [startTime, endTime, slotsOnDay, selectedClass]);
 
   // Availability conflict check
-  const availConflict = (() => {
-    if (!instructorId || !dayLabel) return null;
-    const record = availability.find(
-      a => a.instructorId === instructorId && a.dayOfWeek === dayLabel
-    );
-    const ins = instructors.find(i => i.instructorId === instructorId);
-    if (!record) return `No availability record for this instructor on ${dayLabel}`;
-    if (!record.available) return `${ins?.displayName || "Instructor"} is marked unavailable on ${dayLabel}`;
-    return null;
-  })();
+  const availConflict = findAvailabilityConflict(
+    availability,
+    exceptions,
+    instructors,
+    instructorId,
+    date,
+    dayLabel,
+    startTime,
+    endTime,
+  );
 
   function handleSave() {
     if (!selectedClass) return;
@@ -209,13 +301,14 @@ function AddSlotModal({
 
 // ── Edit Slot Modal ────────────────────────────────────────────────────────
 function EditSlotModal({
-  slot, classes, instructors, slotsOnDay, availability, onClose, onSave,
+  slot, classes, instructors, slotsOnDay, availability, exceptions, onClose, onSave,
 }: {
   slot: SlotDoc;
   classes: { classId: string; name: string; categoryName: string; durationMinutes: number }[];
   instructors: { instructorId: string; displayName: string }[];
   slotsOnDay: SlotDoc[];
-  availability: { instructorId: string; dayOfWeek: string; available: boolean }[];
+  availability: AvailabilityRow[];
+  exceptions: AvailabilityExceptionRow[];
   onClose: () => void;
   onSave: (data: {
     id: Id<"weeklySchedule">;
@@ -256,16 +349,16 @@ function EditSlotModal({
   }, [startTime, endTime, otherSlotsOnDay, selectedClass]);
 
   // Availability conflict check
-  const availConflict = (() => {
-    if (!instructorId || !slot.dayOfWeek) return null;
-    const record = availability.find(
-      a => a.instructorId === instructorId && a.dayOfWeek === slot.dayOfWeek
-    );
-    const ins = instructors.find(i => i.instructorId === instructorId);
-    if (!record) return `No availability record for this instructor on ${slot.dayOfWeek}`;
-    if (!record.available) return `${ins?.displayName || "Instructor"} is marked unavailable on ${slot.dayOfWeek}`;
-    return null;
-  })();
+  const availConflict = findAvailabilityConflict(
+    availability,
+    exceptions,
+    instructors,
+    instructorId,
+    slot.date,
+    slot.dayOfWeek,
+    startTime,
+    endTime,
+  );
 
   function handleSave() {
     if (!selectedClass) return;
@@ -398,6 +491,7 @@ export default function SchedulePage() {
   const classes       = useQuery(api.queries.getClasses) ?? [];
   const instructors   = useQuery(api.queries.getInstructors) ?? [];
   const availability  = useQuery(api.queries.getAvailability) ?? [];
+  const availabilityExceptions = useQuery(api.queries.getAvailabilityExceptions) ?? [];
 
   const { currentUser } = useAuth();
   const submitChange = useMutation(api.mutations.submitPendingChange);
@@ -661,7 +755,21 @@ export default function SchedulePage() {
           classes={classes.map((c) => ({ classId: c.classId, name: c.name, categoryName: c.categoryName, durationMinutes: c.durationMinutes }))}
           instructors={instructors.map((i) => ({ instructorId: i.instructorId, displayName: i.displayName }))}
           slotsOnDay={(slotsByDate[addModal.date] ?? []) as SlotDoc[]}
-          availability={availability.map((a) => ({ instructorId: a.instructorId, dayOfWeek: a.dayOfWeek, available: a.available }))}
+          availability={availability.map((a) => ({
+            instructorId: a.instructorId,
+            dayOfWeek: a.dayOfWeek,
+            startTime: a.startTime,
+            endTime: a.endTime,
+            available: a.available,
+          }))}
+          exceptions={availabilityExceptions.map((e) => ({
+            instructorId: e.instructorId,
+            date: e.date,
+            type: e.type,
+            startTime: e.startTime,
+            endTime: e.endTime,
+            reason: e.reason,
+          }))}
           onClose={() => setAddModal(null)}
           onSave={handleAdd}
         />
@@ -674,7 +782,21 @@ export default function SchedulePage() {
           classes={classes.map((c) => ({ classId: c.classId, name: c.name, categoryName: c.categoryName, durationMinutes: c.durationMinutes }))}
           instructors={instructors.map((i) => ({ instructorId: i.instructorId, displayName: i.displayName }))}
           slotsOnDay={(slotsByDate[editSlot.date] ?? []) as SlotDoc[]}
-          availability={availability.map((a) => ({ instructorId: a.instructorId, dayOfWeek: a.dayOfWeek, available: a.available }))}
+          availability={availability.map((a) => ({
+            instructorId: a.instructorId,
+            dayOfWeek: a.dayOfWeek,
+            startTime: a.startTime,
+            endTime: a.endTime,
+            available: a.available,
+          }))}
+          exceptions={availabilityExceptions.map((e) => ({
+            instructorId: e.instructorId,
+            date: e.date,
+            type: e.type,
+            startTime: e.startTime,
+            endTime: e.endTime,
+            reason: e.reason,
+          }))}
           onClose={() => setEditSlot(null)}
           onSave={handleUpdate}
         />
