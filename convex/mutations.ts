@@ -25,11 +25,11 @@ export const seedData = mutation({
     for (const t of tiers) await ctx.db.insert("tiers", t);
 
     const instructors = [
-      { instructorId: "INS-01", fullName: "Jason Villanueva", displayName: "Jason V.", specialisations: ["Boxing", "Strength & Conditioning"], certifications: ["Boxing Coach Level 2", "CPT"], email: "jason@fiitco.ca", phone: "416-555-0101", status: "Active", joinDate: "2024-01-15", notes: "Senior instructor" },
-      { instructorId: "INS-02", fullName: "Maya Rodriguez", displayName: "Maya R.", specialisations: ["Pilates", "Yoga"], certifications: ["Pilates Instructor Cert", "RYT-200"], email: "maya@fiitco.ca", phone: "416-555-0102", status: "Active", joinDate: "2024-03-01" },
-      { instructorId: "INS-03", fullName: "Diego Fernandez", displayName: "Diego F.", specialisations: ["Boxing", "Hybrid"], certifications: ["Boxing Coach Level 1", "CPT"], email: "diego@fiitco.ca", phone: "416-555-0103", status: "Active", joinDate: "2024-06-01" },
-      { instructorId: "INS-04", fullName: "Priya Kapoor", displayName: "Priya K.", specialisations: ["Strength & Conditioning", "Hybrid"], certifications: ["CPT", "CSCS"], email: "priya@fiitco.ca", phone: "416-555-0104", status: "Active", joinDate: "2024-08-01" },
-      { instructorId: "INS-05", fullName: "Marcus Thompson", displayName: "Marcus T.", specialisations: ["Yoga", "Pilates"], certifications: ["RYT-500", "Pilates Instructor Cert"], email: "marcus@fiitco.ca", phone: "416-555-0105", status: "Active", joinDate: "2024-10-01" },
+      { instructorId: "INS-01", fullName: "Jason Battiste", displayName: "Jason B.", specialisations: ["Boxing", "Strength & Conditioning"], certifications: ["Boxing Coach Level 2", "CPT"], email: "jason@fiitco.ca", phone: "416-555-0101", status: "Active", joinDate: "2024-01-15", notes: "Senior instructor" },
+      { instructorId: "INS-02", fullName: "Sarah Green", displayName: "Sarah G.", specialisations: ["Pilates", "Yoga"], certifications: ["Pilates Instructor Cert", "RYT-200"], email: "sarah@fiitco.ca", phone: "416-555-0102", status: "Active", joinDate: "2024-03-01" },
+      { instructorId: "INS-03", fullName: "Matt Makar", displayName: "Matt M.", specialisations: ["Boxing", "Hybrid"], certifications: ["Boxing Coach Level 1", "CPT"], email: "matt@fiitco.ca", phone: "416-555-0103", status: "Active", joinDate: "2024-06-01" },
+      { instructorId: "INS-04", fullName: "Jaye Pan", displayName: "Jaye P.", specialisations: ["Strength & Conditioning", "Hybrid"], certifications: ["CPT", "CSCS"], email: "jaye@fiitco.ca", phone: "416-555-0104", status: "Active", joinDate: "2024-08-01" },
+      { instructorId: "INS-05", fullName: "Nick Radionov", displayName: "Nick R.", specialisations: ["Yoga", "Pilates"], certifications: ["RYT-500", "Pilates Instructor Cert"], email: "nick@fiitco.ca", phone: "416-555-0105", status: "Active", joinDate: "2024-10-01" },
     ];
     for (const i of instructors) await ctx.db.insert("instructors", i);
 
@@ -51,11 +51,11 @@ export const seedData = mutation({
     if (existingUsers.length === 0) {
       const seedUsers = [
         { email: "arden@fiitco.ca", password: btoa("fiitco2024"), fullName: "Arden Hamilton", displayName: "Arden (Admin)", role: "admin", status: "active", securityQuestion: "What city were you born in?", securityAnswer: "toronto", createdAt: "2024-01-01T00:00:00.000Z" },
-        { email: "jason@fiitco.ca", password: btoa("fiitco2024"), fullName: "Jason Villanueva", displayName: "Jason V.", role: "instructor", instructorId: "INS-01", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "boxing", createdAt: "2024-01-15T00:00:00.000Z" },
-        { email: "maya@fiitco.ca", password: btoa("fiitco2024"), fullName: "Maya Rodriguez", displayName: "Maya R.", role: "instructor", instructorId: "INS-02", status: "active", securityQuestion: "What is your pet's name?", securityAnswer: "luna", createdAt: "2024-03-01T00:00:00.000Z" },
-        { email: "diego@fiitco.ca", password: btoa("fiitco2024"), fullName: "Diego Fernandez", displayName: "Diego F.", role: "instructor", instructorId: "INS-03", status: "active", securityQuestion: "What city were you born in?", securityAnswer: "bogota", createdAt: "2024-06-01T00:00:00.000Z" },
-        { email: "priya@fiitco.ca", password: btoa("fiitco2024"), fullName: "Priya Kapoor", displayName: "Priya K.", role: "instructor", instructorId: "INS-04", status: "active", securityQuestion: "What was your first school?", securityAnswer: "maple leaf", createdAt: "2024-08-01T00:00:00.000Z" },
-        { email: "marcus@fiitco.ca", password: btoa("fiitco2024"), fullName: "Marcus Thompson", displayName: "Marcus T.", role: "instructor", instructorId: "INS-05", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "yoga", createdAt: "2024-10-01T00:00:00.000Z" },
+        { email: "jason@fiitco.ca", password: btoa("fiitco2024"), fullName: "Jason Battiste", displayName: "Jason B.", role: "instructor", instructorId: "INS-01", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "boxing", createdAt: "2024-01-15T00:00:00.000Z" },
+        { email: "sarah@fiitco.ca", password: btoa("fiitco2024"), fullName: "Sarah Green", displayName: "Sarah G.", role: "instructor", instructorId: "INS-02", status: "active", securityQuestion: "What is your pet's name?", securityAnswer: "luna", createdAt: "2024-03-01T00:00:00.000Z" },
+        { email: "matt@fiitco.ca", password: btoa("fiitco2024"), fullName: "Matt Makar", displayName: "Matt M.", role: "instructor", instructorId: "INS-03", status: "active", securityQuestion: "What city were you born in?", securityAnswer: "bogota", createdAt: "2024-06-01T00:00:00.000Z" },
+        { email: "jaye@fiitco.ca", password: btoa("fiitco2024"), fullName: "Jaye Pan", displayName: "Jaye P.", role: "instructor", instructorId: "INS-04", status: "active", securityQuestion: "What was your first school?", securityAnswer: "maple leaf", createdAt: "2024-08-01T00:00:00.000Z" },
+        { email: "nick@fiitco.ca", password: btoa("fiitco2024"), fullName: "Nick Radionov", displayName: "Nick R.", role: "instructor", instructorId: "INS-05", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "yoga", createdAt: "2024-10-01T00:00:00.000Z" },
       ];
       for (const u of seedUsers) await ctx.db.insert("users", u);
       usersSeeded = seedUsers.length;
@@ -652,11 +652,11 @@ export const forceReseed = mutation({
 
     // ── Instructors ───────────────────────────────────────────────────────
     const instructors = [
-      { instructorId: "INS-01", fullName: "Jason Villanueva", displayName: "Jason V.", specialisations: ["Boxing", "Strength & Conditioning"], certifications: ["Boxing Coach Level 2", "CPT"],               email: "jason@fiitco.ca",  phone: "416-555-0101", status: "Active", joinDate: "2024-01-15", notes: "Senior instructor" },
-      { instructorId: "INS-02", fullName: "Maya Rodriguez",   displayName: "Maya R.",  specialisations: ["Pilates", "Yoga"],                   certifications: ["Pilates Instructor Cert", "RYT-200"],          email: "maya@fiitco.ca",   phone: "416-555-0102", status: "Active", joinDate: "2024-03-01" },
-      { instructorId: "INS-03", fullName: "Diego Fernandez",  displayName: "Diego F.", specialisations: ["Boxing", "Hybrid"],                  certifications: ["Boxing Coach Level 1", "CPT"],                 email: "diego@fiitco.ca",  phone: "416-555-0103", status: "Active", joinDate: "2024-06-01" },
-      { instructorId: "INS-04", fullName: "Priya Kapoor",     displayName: "Priya K.", specialisations: ["Strength & Conditioning", "Hybrid"], certifications: ["CPT", "CSCS"],                                 email: "priya@fiitco.ca",  phone: "416-555-0104", status: "Active", joinDate: "2024-08-01" },
-      { instructorId: "INS-05", fullName: "Marcus Thompson",  displayName: "Marcus T.",specialisations: ["Yoga", "Pilates"],                   certifications: ["RYT-500", "Pilates Instructor Cert"],           email: "marcus@fiitco.ca", phone: "416-555-0105", status: "Active", joinDate: "2024-10-01" },
+      { instructorId: "INS-01", fullName: "Jason Battiste", displayName: "Jason B.", specialisations: ["Boxing", "Strength & Conditioning"], certifications: ["Boxing Coach Level 2", "CPT"],               email: "jason@fiitco.ca",  phone: "416-555-0101", status: "Active", joinDate: "2024-01-15", notes: "Senior instructor" },
+      { instructorId: "INS-02", fullName: "Sarah Green",   displayName: "Sarah G.",  specialisations: ["Pilates", "Yoga"],                   certifications: ["Pilates Instructor Cert", "RYT-200"],          email: "sarah@fiitco.ca",   phone: "416-555-0102", status: "Active", joinDate: "2024-03-01" },
+      { instructorId: "INS-03", fullName: "Matt Makar",  displayName: "Matt M.", specialisations: ["Boxing", "Hybrid"],                  certifications: ["Boxing Coach Level 1", "CPT"],                 email: "matt@fiitco.ca",  phone: "416-555-0103", status: "Active", joinDate: "2024-06-01" },
+      { instructorId: "INS-04", fullName: "Jaye Pan",     displayName: "Jaye P.", specialisations: ["Strength & Conditioning", "Hybrid"], certifications: ["CPT", "CSCS"],                                 email: "jaye@fiitco.ca",  phone: "416-555-0104", status: "Active", joinDate: "2024-08-01" },
+      { instructorId: "INS-05", fullName: "Nick Radionov",  displayName: "Nick R.",specialisations: ["Yoga", "Pilates"],                   certifications: ["RYT-500", "Pilates Instructor Cert"],           email: "nick@fiitco.ca", phone: "416-555-0105", status: "Active", joinDate: "2024-10-01" },
     ];
     for (const i of instructors) await ctx.db.insert("instructors", i);
 
@@ -832,48 +832,48 @@ export const forceReseed = mutation({
     // Today = Friday April 3, 2026 so this is the current live week
     const schedule = [
       // ── Monday March 30 ──
-      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "06:00", endTime: "07:00", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  capacity: 20, classId: "CLS-04" },
-      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "07:00", endTime: "07:45", className: "Pilates Box",            categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Priya K.",  capacity: 22, classId: "CLS-07" },
-      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "08:00", endTime: "09:00", className: "Hybrid Crusher",         categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Priya K.",  capacity: 20, classId: "CLS-06" },
-      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "12:00", endTime: "13:00", className: "Lunch Box",              categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  capacity: 18, classId: "CLS-04" },
-      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "17:00", endTime: "18:00", className: "Power Hour",             categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Maya R.",   capacity: 16, classId: "CLS-01" },
-      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "18:00", endTime: "19:00", className: "Yoga & Box",             categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Maya R.",   capacity: 20, classId: "CLS-06" },
-      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "19:00", endTime: "20:00", className: "Bag Work",               categoryName: "Boxing",                  instructorId: "INS-02", instructorName: "Maya R.",   capacity: 20, classId: "CLS-05" },
+      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "06:00", endTime: "07:00", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  capacity: 20, classId: "CLS-04" },
+      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "07:00", endTime: "07:45", className: "Pilates Box",            categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 22, classId: "CLS-07" },
+      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "08:00", endTime: "09:00", className: "Hybrid Crusher",         categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 20, classId: "CLS-06" },
+      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "12:00", endTime: "13:00", className: "Lunch Box",              categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  capacity: 18, classId: "CLS-04" },
+      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "17:00", endTime: "18:00", className: "Power Hour",             categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 16, classId: "CLS-01" },
+      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "18:00", endTime: "19:00", className: "Yoga & Box",             categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 20, classId: "CLS-06" },
+      { date: "2026-03-30", dayOfWeek: "Mon", startTime: "19:00", endTime: "20:00", className: "Bag Work",               categoryName: "Boxing",                  instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 20, classId: "CLS-05" },
       // ── Tuesday March 31 ──
-      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "06:00", endTime: "07:00", className: "Yoga Circuit",           categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Priya K.",  capacity: 18, classId: "CLS-08" },
-      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "07:00", endTime: "08:00", className: "Strength & Conditioning",categoryName: "Strength & Conditioning", instructorId: "INS-01", instructorName: "Jason V.",  capacity: 16, classId: "CLS-01" },
-      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "17:00", endTime: "18:00", className: "Fight Night Prep",       categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 15, classId: "CLS-05" },
-      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "18:00", endTime: "19:00", className: "Advanced Boxing",        categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 14, classId: "CLS-05" },
-      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "19:00", endTime: "20:00", className: "Hybrid & Pilates",       categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 18, classId: "CLS-06" },
-      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "20:00", endTime: "21:00", className: "Late Night HIT",         categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 15, classId: "CLS-06" },
+      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "06:00", endTime: "07:00", className: "Yoga Circuit",           categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 18, classId: "CLS-08" },
+      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "07:00", endTime: "08:00", className: "Strength & Conditioning",categoryName: "Strength & Conditioning", instructorId: "INS-01", instructorName: "Jason B.",  capacity: 16, classId: "CLS-01" },
+      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "17:00", endTime: "18:00", className: "Fight Night Prep",       categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 15, classId: "CLS-05" },
+      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "18:00", endTime: "19:00", className: "Advanced Boxing",        categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 14, classId: "CLS-05" },
+      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "19:00", endTime: "20:00", className: "Hybrid & Pilates",       categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 18, classId: "CLS-06" },
+      { date: "2026-03-31", dayOfWeek: "Tue", startTime: "20:00", endTime: "21:00", className: "Late Night HIT",         categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 15, classId: "CLS-06" },
       // ── Wednesday April 1 ──
-      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "06:00", endTime: "07:00", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  capacity: 20, classId: "CLS-04" },
-      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "07:00", endTime: "07:45", className: "Pilates Box",            categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Priya K.",  capacity: 22, classId: "CLS-07" },
-      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "08:00", endTime: "09:00", className: "Hybrid Crusher",         categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Priya K.",  capacity: 20, classId: "CLS-06" },
-      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "12:00", endTime: "13:00", className: "Lunch Box",              categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  capacity: 18, classId: "CLS-04" },
-      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "17:00", endTime: "18:00", className: "Power Hour",             categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Maya R.",   capacity: 16, classId: "CLS-01" },
-      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "18:00", endTime: "19:00", className: "Yoga & Box",             categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Maya R.",   capacity: 20, classId: "CLS-06" },
-      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "19:00", endTime: "20:00", className: "Bag Work",               categoryName: "Boxing",                  instructorId: "INS-02", instructorName: "Maya R.",   capacity: 20, classId: "CLS-05" },
+      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "06:00", endTime: "07:00", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  capacity: 20, classId: "CLS-04" },
+      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "07:00", endTime: "07:45", className: "Pilates Box",            categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 22, classId: "CLS-07" },
+      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "08:00", endTime: "09:00", className: "Hybrid Crusher",         categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 20, classId: "CLS-06" },
+      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "12:00", endTime: "13:00", className: "Lunch Box",              categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  capacity: 18, classId: "CLS-04" },
+      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "17:00", endTime: "18:00", className: "Power Hour",             categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 16, classId: "CLS-01" },
+      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "18:00", endTime: "19:00", className: "Yoga & Box",             categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 20, classId: "CLS-06" },
+      { date: "2026-04-01", dayOfWeek: "Wed", startTime: "19:00", endTime: "20:00", className: "Bag Work",               categoryName: "Boxing",                  instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 20, classId: "CLS-05" },
       // ── Thursday April 2 ──
-      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "06:00", endTime: "07:00", className: "Yoga Circuit",           categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Priya K.",  capacity: 18, classId: "CLS-08" },
-      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "07:00", endTime: "08:00", className: "Strength & Conditioning",categoryName: "Strength & Conditioning", instructorId: "INS-01", instructorName: "Jason V.",  capacity: 16, classId: "CLS-01" },
-      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "17:00", endTime: "18:00", className: "Fight Night Prep",       categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 15, classId: "CLS-05" },
-      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "18:00", endTime: "19:00", className: "Advanced Boxing",        categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 14, classId: "CLS-05" },
-      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "19:00", endTime: "20:00", className: "Hybrid & Pilates",       categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 18, classId: "CLS-06" },
-      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "20:00", endTime: "21:00", className: "Late Night HIT",         categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 15, classId: "CLS-06" },
+      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "06:00", endTime: "07:00", className: "Yoga Circuit",           categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 18, classId: "CLS-08" },
+      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "07:00", endTime: "08:00", className: "Strength & Conditioning",categoryName: "Strength & Conditioning", instructorId: "INS-01", instructorName: "Jason B.",  capacity: 16, classId: "CLS-01" },
+      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "17:00", endTime: "18:00", className: "Fight Night Prep",       categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 15, classId: "CLS-05" },
+      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "18:00", endTime: "19:00", className: "Advanced Boxing",        categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 14, classId: "CLS-05" },
+      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "19:00", endTime: "20:00", className: "Hybrid & Pilates",       categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 18, classId: "CLS-06" },
+      { date: "2026-04-02", dayOfWeek: "Thu", startTime: "20:00", endTime: "21:00", className: "Late Night HIT",         categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 15, classId: "CLS-06" },
       // ── Friday April 3 (TODAY) ──
-      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "06:00", endTime: "07:00", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  capacity: 20, classId: "CLS-04" },
-      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "07:00", endTime: "07:45", className: "Pilates Box",            categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Priya K.",  capacity: 22, classId: "CLS-07" },
-      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "08:00", endTime: "09:00", className: "Hybrid Crusher",         categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Priya K.",  capacity: 20, classId: "CLS-06" },
-      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "12:00", endTime: "13:00", className: "Lunch Box",              categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  capacity: 18, classId: "CLS-04" },
-      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "17:00", endTime: "18:00", className: "Power Hour",             categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Maya R.",   capacity: 16, classId: "CLS-01" },
-      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "18:00", endTime: "19:00", className: "Yoga & Box",             categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Maya R.",   capacity: 20, classId: "CLS-06" },
+      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "06:00", endTime: "07:00", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  capacity: 20, classId: "CLS-04" },
+      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "07:00", endTime: "07:45", className: "Pilates Box",            categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 22, classId: "CLS-07" },
+      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "08:00", endTime: "09:00", className: "Hybrid Crusher",         categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Jaye P.",  capacity: 20, classId: "CLS-06" },
+      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "12:00", endTime: "13:00", className: "Lunch Box",              categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  capacity: 18, classId: "CLS-04" },
+      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "17:00", endTime: "18:00", className: "Power Hour",             categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 16, classId: "CLS-01" },
+      { date: "2026-04-03", dayOfWeek: "Fri", startTime: "18:00", endTime: "19:00", className: "Yoga & Box",             categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Sarah G.",   capacity: 20, classId: "CLS-06" },
       // ── Saturday April 4 ──
-      { date: "2026-04-04", dayOfWeek: "Sat", startTime: "09:00", endTime: "10:00", className: "Weekend Warriors",       categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 25, classId: "CLS-06" },
-      { date: "2026-04-04", dayOfWeek: "Sat", startTime: "10:00", endTime: "10:45", className: "Full Body Strength",     categoryName: "Strength & Conditioning", instructorId: "INS-05", instructorName: "Marcus T.", capacity: 18, classId: "CLS-03" },
+      { date: "2026-04-04", dayOfWeek: "Sat", startTime: "09:00", endTime: "10:00", className: "Weekend Warriors",       categoryName: "Hybrid",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 25, classId: "CLS-06" },
+      { date: "2026-04-04", dayOfWeek: "Sat", startTime: "10:00", endTime: "10:45", className: "Full Body Strength",     categoryName: "Strength & Conditioning", instructorId: "INS-05", instructorName: "Nick R.", capacity: 18, classId: "CLS-03" },
       // ── Sunday April 5 ──
-      { date: "2026-04-05", dayOfWeek: "Sun", startTime: "09:00", endTime: "10:00", className: "Sunday Sweat",           categoryName: "Strength & Conditioning", instructorId: "INS-05", instructorName: "Marcus T.", capacity: 20, classId: "CLS-02" },
-      { date: "2026-04-05", dayOfWeek: "Sun", startTime: "10:00", endTime: "11:00", className: "Open Sparring",          categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Diego F.",  capacity: 12, classId: "CLS-05" },
+      { date: "2026-04-05", dayOfWeek: "Sun", startTime: "09:00", endTime: "10:00", className: "Sunday Sweat",           categoryName: "Strength & Conditioning", instructorId: "INS-05", instructorName: "Nick R.", capacity: 20, classId: "CLS-02" },
+      { date: "2026-04-05", dayOfWeek: "Sun", startTime: "10:00", endTime: "11:00", className: "Open Sparring",          categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Matt M.",  capacity: 12, classId: "CLS-05" },
     ];
     for (const s of schedule) {
       await ctx.db.insert("weeklySchedule", {
@@ -886,29 +886,29 @@ export const forceReseed = mutation({
 
     // ── Availability ──────────────────────────────────────────────────────
     const availability = [
-      // Jason V. — Mon/Wed/Fri mornings
-      { instructorId: "INS-01", instructorName: "Jason V.", dayOfWeek: "Mon", startTime: "06:00", endTime: "14:00", available: true },
-      { instructorId: "INS-01", instructorName: "Jason V.", dayOfWeek: "Wed", startTime: "06:00", endTime: "14:00", available: true },
-      { instructorId: "INS-01", instructorName: "Jason V.", dayOfWeek: "Fri", startTime: "06:00", endTime: "14:00", available: true },
-      { instructorId: "INS-01", instructorName: "Jason V.", dayOfWeek: "Tue", startTime: "07:00", endTime: "09:00", available: true },
-      { instructorId: "INS-01", instructorName: "Jason V.", dayOfWeek: "Thu", startTime: "07:00", endTime: "09:00", available: true },
-      // Maya R. — Mon/Wed/Fri evenings
-      { instructorId: "INS-02", instructorName: "Maya R.",  dayOfWeek: "Mon", startTime: "17:00", endTime: "21:00", available: true },
-      { instructorId: "INS-02", instructorName: "Maya R.",  dayOfWeek: "Wed", startTime: "17:00", endTime: "21:00", available: true },
-      { instructorId: "INS-02", instructorName: "Maya R.",  dayOfWeek: "Fri", startTime: "17:00", endTime: "20:00", available: true },
-      // Diego F. — Tue/Thu evenings + Sat/Sun
-      { instructorId: "INS-03", instructorName: "Diego F.", dayOfWeek: "Tue", startTime: "17:00", endTime: "21:00", available: true },
-      { instructorId: "INS-03", instructorName: "Diego F.", dayOfWeek: "Thu", startTime: "17:00", endTime: "21:00", available: true },
-      { instructorId: "INS-03", instructorName: "Diego F.", dayOfWeek: "Sat", startTime: "09:00", endTime: "13:00", available: true },
-      { instructorId: "INS-03", instructorName: "Diego F.", dayOfWeek: "Sun", startTime: "09:00", endTime: "13:00", available: true },
-      // Priya K. — Mon–Thu mornings
-      { instructorId: "INS-04", instructorName: "Priya K.", dayOfWeek: "Mon", startTime: "06:00", endTime: "10:00", available: true },
-      { instructorId: "INS-04", instructorName: "Priya K.", dayOfWeek: "Tue", startTime: "06:00", endTime: "10:00", available: true },
-      { instructorId: "INS-04", instructorName: "Priya K.", dayOfWeek: "Wed", startTime: "06:00", endTime: "10:00", available: true },
-      { instructorId: "INS-04", instructorName: "Priya K.", dayOfWeek: "Thu", startTime: "06:00", endTime: "10:00", available: true },
-      // Marcus T. — Wed–Sat (varies)
-      { instructorId: "INS-05", instructorName: "Marcus T.",dayOfWeek: "Sat", startTime: "09:00", endTime: "14:00", available: true },
-      { instructorId: "INS-05", instructorName: "Marcus T.",dayOfWeek: "Sun", startTime: "09:00", endTime: "13:00", available: true },
+      // Jason B. — Mon/Wed/Fri mornings
+      { instructorId: "INS-01", instructorName: "Jason B.", dayOfWeek: "Mon", startTime: "06:00", endTime: "14:00", available: true },
+      { instructorId: "INS-01", instructorName: "Jason B.", dayOfWeek: "Wed", startTime: "06:00", endTime: "14:00", available: true },
+      { instructorId: "INS-01", instructorName: "Jason B.", dayOfWeek: "Fri", startTime: "06:00", endTime: "14:00", available: true },
+      { instructorId: "INS-01", instructorName: "Jason B.", dayOfWeek: "Tue", startTime: "07:00", endTime: "09:00", available: true },
+      { instructorId: "INS-01", instructorName: "Jason B.", dayOfWeek: "Thu", startTime: "07:00", endTime: "09:00", available: true },
+      // Sarah G. — Mon/Wed/Fri evenings
+      { instructorId: "INS-02", instructorName: "Sarah G.",  dayOfWeek: "Mon", startTime: "17:00", endTime: "21:00", available: true },
+      { instructorId: "INS-02", instructorName: "Sarah G.",  dayOfWeek: "Wed", startTime: "17:00", endTime: "21:00", available: true },
+      { instructorId: "INS-02", instructorName: "Sarah G.",  dayOfWeek: "Fri", startTime: "17:00", endTime: "20:00", available: true },
+      // Matt M. — Tue/Thu evenings + Sat/Sun
+      { instructorId: "INS-03", instructorName: "Matt M.", dayOfWeek: "Tue", startTime: "17:00", endTime: "21:00", available: true },
+      { instructorId: "INS-03", instructorName: "Matt M.", dayOfWeek: "Thu", startTime: "17:00", endTime: "21:00", available: true },
+      { instructorId: "INS-03", instructorName: "Matt M.", dayOfWeek: "Sat", startTime: "09:00", endTime: "13:00", available: true },
+      { instructorId: "INS-03", instructorName: "Matt M.", dayOfWeek: "Sun", startTime: "09:00", endTime: "13:00", available: true },
+      // Jaye P. — Mon–Thu mornings
+      { instructorId: "INS-04", instructorName: "Jaye P.", dayOfWeek: "Mon", startTime: "06:00", endTime: "10:00", available: true },
+      { instructorId: "INS-04", instructorName: "Jaye P.", dayOfWeek: "Tue", startTime: "06:00", endTime: "10:00", available: true },
+      { instructorId: "INS-04", instructorName: "Jaye P.", dayOfWeek: "Wed", startTime: "06:00", endTime: "10:00", available: true },
+      { instructorId: "INS-04", instructorName: "Jaye P.", dayOfWeek: "Thu", startTime: "06:00", endTime: "10:00", available: true },
+      // Nick R. — Wed–Sat (varies)
+      { instructorId: "INS-05", instructorName: "Nick R.",dayOfWeek: "Sat", startTime: "09:00", endTime: "14:00", available: true },
+      { instructorId: "INS-05", instructorName: "Nick R.",dayOfWeek: "Sun", startTime: "09:00", endTime: "13:00", available: true },
     ];
     for (const a of availability) await ctx.db.insert("availability", { ...a, notes: undefined });
 
@@ -916,7 +916,7 @@ export const forceReseed = mutation({
     const classPrograms = [
       {
         classId: "CLS-04", className: "Boxing Basics",
-        instructorId: "INS-01", instructorName: "Jason V.",
+        instructorId: "INS-01", instructorName: "Jason B.",
         weekOf: "2026-03-30", status: "Approved", submittedAt: "2026-03-28T10:00:00Z", approvedAt: "2026-03-29T09:00:00Z", approvedBy: "Arden",
         blocks: [
           { blockType: "Warm-Up",   durationMinutes: 10, description: "Dynamic warm-up",        equipment: [],              instructions: "High knees, arm circles, hip rotations x2 rounds", exerciseName: undefined },
@@ -927,7 +927,7 @@ export const forceReseed = mutation({
       },
       {
         classId: "CLS-01", className: "Power Hour",
-        instructorId: "INS-02", instructorName: "Maya R.",
+        instructorId: "INS-02", instructorName: "Sarah G.",
         weekOf: "2026-03-30", status: "Approved", submittedAt: "2026-03-28T14:00:00Z", approvedAt: "2026-03-29T11:00:00Z", approvedBy: "Arden",
         blocks: [
           { blockType: "Warm-Up",   durationMinutes: 10, description: "Activation series",      equipment: [],                instructions: "Band walks, glute bridges, thoracic rotation x2 sets", exerciseName: undefined },
@@ -939,7 +939,7 @@ export const forceReseed = mutation({
       },
       {
         classId: "CLS-06", className: "Hybrid Crusher",
-        instructorId: "INS-04", instructorName: "Priya K.",
+        instructorId: "INS-04", instructorName: "Jaye P.",
         weekOf: "2026-03-30", status: "Submitted", submittedAt: "2026-04-02T20:00:00Z",
         blocks: [
           { blockType: "Warm-Up",   durationMinutes: 8,  description: "Cardio activation",      equipment: ["Jump Rope"],      instructions: "5 min jump rope + 3 min dynamic stretch", exerciseName: "Jump Rope" },
@@ -950,7 +950,7 @@ export const forceReseed = mutation({
       },
       {
         classId: "CLS-05", className: "Fight Night Prep",
-        instructorId: "INS-03", instructorName: "Diego F.",
+        instructorId: "INS-03", instructorName: "Matt M.",
         weekOf: "2026-03-30", status: "Draft",
         blocks: [
           { blockType: "Warm-Up",   durationMinutes: 10, description: "Footwork drills",        equipment: [],                instructions: "Ladder + cone drills, shadow boxing", exerciseName: "Shadow Boxing" },
@@ -968,18 +968,18 @@ export const forceReseed = mutation({
 
     // ── Delivery Log ─────────────────────────────────────────────────────
     const deliveryLogs = [
-      { date: "2026-03-30", classId: "CLS-04", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  wasPlanned: true,  actualAttendance: 18, maxCapacity: 20, programFollowed: true,  variationsMade: undefined, notes: "Great energy in class today. Jab-cross technique improving week over week." },
-      { date: "2026-03-30", classId: "CLS-07", className: "Pilates Box",             categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Priya K.",  wasPlanned: true,  actualAttendance: 20, maxCapacity: 22, programFollowed: true,  variationsMade: undefined, notes: undefined },
-      { date: "2026-03-30", classId: "CLS-06", className: "Hybrid Crusher",          categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Priya K.",  wasPlanned: true,  actualAttendance: 19, maxCapacity: 20, programFollowed: true,  variationsMade: "Subbed medicine ball slams for KB swings due to availability", notes: undefined },
-      { date: "2026-03-30", classId: "CLS-04", className: "Lunch Box",               categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  wasPlanned: true,  actualAttendance: 14, maxCapacity: 18, programFollowed: true,  variationsMade: undefined, notes: undefined },
-      { date: "2026-03-30", classId: "CLS-01", className: "Power Hour",              categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Maya R.",   wasPlanned: true,  actualAttendance: 15, maxCapacity: 16, programFollowed: true,  variationsMade: undefined, notes: "Full class! Moved to 75% max on deadlifts for newer members." },
-      { date: "2026-03-30", classId: "CLS-06", className: "Yoga & Box",              categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Maya R.",   wasPlanned: false, actualAttendance: 12, maxCapacity: 20, programFollowed: false, variationsMade: "No program submitted — improvised session", notes: "Reminder sent to instructor." },
-      { date: "2026-03-31", classId: "CLS-08", className: "Yoga Circuit",            categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Priya K.",  wasPlanned: true,  actualAttendance: 16, maxCapacity: 18, programFollowed: true,  variationsMade: undefined, notes: undefined },
-      { date: "2026-03-31", classId: "CLS-01", className: "Strength & Conditioning", categoryName: "Strength & Conditioning", instructorId: "INS-01", instructorName: "Jason V.",  wasPlanned: true,  actualAttendance: 14, maxCapacity: 16, programFollowed: true,  variationsMade: undefined, notes: undefined },
-      { date: "2026-04-01", classId: "CLS-04", className: "Boxing Basics",           categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason V.",  wasPlanned: true,  actualAttendance: 20, maxCapacity: 20, programFollowed: true,  variationsMade: undefined, notes: "Full house — best attendance this week!" },
-      { date: "2026-04-01", classId: "CLS-07", className: "Pilates Box",             categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Priya K.",  wasPlanned: true,  actualAttendance: 18, maxCapacity: 22, programFollowed: true,  variationsMade: undefined, notes: undefined },
-      { date: "2026-04-02", classId: "CLS-08", className: "Yoga Circuit",            categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Priya K.",  wasPlanned: true,  actualAttendance: 15, maxCapacity: 18, programFollowed: true,  variationsMade: undefined, notes: undefined },
-      { date: "2026-04-02", classId: "CLS-05", className: "Fight Night Prep",        categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Diego F.",  wasPlanned: false, actualAttendance: 13, maxCapacity: 15, programFollowed: false, variationsMade: "Draft plan referenced, not finalised", notes: "Diego to submit plan by Fri." },
+      { date: "2026-03-30", classId: "CLS-04", className: "Boxing Basics",          categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  wasPlanned: true,  actualAttendance: 18, maxCapacity: 20, programFollowed: true,  variationsMade: undefined, notes: "Great energy in class today. Jab-cross technique improving week over week." },
+      { date: "2026-03-30", classId: "CLS-07", className: "Pilates Box",             categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Jaye P.",  wasPlanned: true,  actualAttendance: 20, maxCapacity: 22, programFollowed: true,  variationsMade: undefined, notes: undefined },
+      { date: "2026-03-30", classId: "CLS-06", className: "Hybrid Crusher",          categoryName: "Hybrid",                  instructorId: "INS-04", instructorName: "Jaye P.",  wasPlanned: true,  actualAttendance: 19, maxCapacity: 20, programFollowed: true,  variationsMade: "Subbed medicine ball slams for KB swings due to availability", notes: undefined },
+      { date: "2026-03-30", classId: "CLS-04", className: "Lunch Box",               categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  wasPlanned: true,  actualAttendance: 14, maxCapacity: 18, programFollowed: true,  variationsMade: undefined, notes: undefined },
+      { date: "2026-03-30", classId: "CLS-01", className: "Power Hour",              categoryName: "Strength & Conditioning", instructorId: "INS-02", instructorName: "Sarah G.",   wasPlanned: true,  actualAttendance: 15, maxCapacity: 16, programFollowed: true,  variationsMade: undefined, notes: "Full class! Moved to 75% max on deadlifts for newer members." },
+      { date: "2026-03-30", classId: "CLS-06", className: "Yoga & Box",              categoryName: "Hybrid",                  instructorId: "INS-02", instructorName: "Sarah G.",   wasPlanned: false, actualAttendance: 12, maxCapacity: 20, programFollowed: false, variationsMade: "No program submitted — improvised session", notes: "Reminder sent to instructor." },
+      { date: "2026-03-31", classId: "CLS-08", className: "Yoga Circuit",            categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Jaye P.",  wasPlanned: true,  actualAttendance: 16, maxCapacity: 18, programFollowed: true,  variationsMade: undefined, notes: undefined },
+      { date: "2026-03-31", classId: "CLS-01", className: "Strength & Conditioning", categoryName: "Strength & Conditioning", instructorId: "INS-01", instructorName: "Jason B.",  wasPlanned: true,  actualAttendance: 14, maxCapacity: 16, programFollowed: true,  variationsMade: undefined, notes: undefined },
+      { date: "2026-04-01", classId: "CLS-04", className: "Boxing Basics",           categoryName: "Boxing",                  instructorId: "INS-01", instructorName: "Jason B.",  wasPlanned: true,  actualAttendance: 20, maxCapacity: 20, programFollowed: true,  variationsMade: undefined, notes: "Full house — best attendance this week!" },
+      { date: "2026-04-01", classId: "CLS-07", className: "Pilates Box",             categoryName: "Pilates",                 instructorId: "INS-04", instructorName: "Jaye P.",  wasPlanned: true,  actualAttendance: 18, maxCapacity: 22, programFollowed: true,  variationsMade: undefined, notes: undefined },
+      { date: "2026-04-02", classId: "CLS-08", className: "Yoga Circuit",            categoryName: "Yoga",                    instructorId: "INS-04", instructorName: "Jaye P.",  wasPlanned: true,  actualAttendance: 15, maxCapacity: 18, programFollowed: true,  variationsMade: undefined, notes: undefined },
+      { date: "2026-04-02", classId: "CLS-05", className: "Fight Night Prep",        categoryName: "Boxing",                  instructorId: "INS-03", instructorName: "Matt M.",  wasPlanned: false, actualAttendance: 13, maxCapacity: 15, programFollowed: false, variationsMade: "Draft plan referenced, not finalised", notes: "Matt to submit plan by Fri." },
     ];
     for (const d of deliveryLogs) await ctx.db.insert("deliveryLog", {
       ...d,
@@ -1034,11 +1034,11 @@ export const forceReseed = mutation({
     if (existingUsers.length === 0) {
       const seedUsers = [
         { email: "arden@fiitco.ca", password: btoa("fiitco2024"), fullName: "Arden Hamilton", displayName: "Arden (Admin)", role: "admin", status: "active", securityQuestion: "What city were you born in?", securityAnswer: "toronto", createdAt: "2024-01-01T00:00:00.000Z" },
-        { email: "jason@fiitco.ca", password: btoa("fiitco2024"), fullName: "Jason Villanueva", displayName: "Jason V.", role: "instructor", instructorId: "INS-01", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "boxing", createdAt: "2024-01-15T00:00:00.000Z" },
-        { email: "maya@fiitco.ca", password: btoa("fiitco2024"), fullName: "Maya Rodriguez", displayName: "Maya R.", role: "instructor", instructorId: "INS-02", status: "active", securityQuestion: "What is your pet's name?", securityAnswer: "luna", createdAt: "2024-03-01T00:00:00.000Z" },
-        { email: "diego@fiitco.ca", password: btoa("fiitco2024"), fullName: "Diego Fernandez", displayName: "Diego F.", role: "instructor", instructorId: "INS-03", status: "active", securityQuestion: "What city were you born in?", securityAnswer: "bogota", createdAt: "2024-06-01T00:00:00.000Z" },
-        { email: "priya@fiitco.ca", password: btoa("fiitco2024"), fullName: "Priya Kapoor", displayName: "Priya K.", role: "instructor", instructorId: "INS-04", status: "active", securityQuestion: "What was your first school?", securityAnswer: "maple leaf", createdAt: "2024-08-01T00:00:00.000Z" },
-        { email: "marcus@fiitco.ca", password: btoa("fiitco2024"), fullName: "Marcus Thompson", displayName: "Marcus T.", role: "instructor", instructorId: "INS-05", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "yoga", createdAt: "2024-10-01T00:00:00.000Z" },
+        { email: "jason@fiitco.ca", password: btoa("fiitco2024"), fullName: "Jason Battiste", displayName: "Jason B.", role: "instructor", instructorId: "INS-01", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "boxing", createdAt: "2024-01-15T00:00:00.000Z" },
+        { email: "sarah@fiitco.ca", password: btoa("fiitco2024"), fullName: "Sarah Green", displayName: "Sarah G.", role: "instructor", instructorId: "INS-02", status: "active", securityQuestion: "What is your pet's name?", securityAnswer: "luna", createdAt: "2024-03-01T00:00:00.000Z" },
+        { email: "matt@fiitco.ca", password: btoa("fiitco2024"), fullName: "Matt Makar", displayName: "Matt M.", role: "instructor", instructorId: "INS-03", status: "active", securityQuestion: "What city were you born in?", securityAnswer: "bogota", createdAt: "2024-06-01T00:00:00.000Z" },
+        { email: "jaye@fiitco.ca", password: btoa("fiitco2024"), fullName: "Jaye Pan", displayName: "Jaye P.", role: "instructor", instructorId: "INS-04", status: "active", securityQuestion: "What was your first school?", securityAnswer: "maple leaf", createdAt: "2024-08-01T00:00:00.000Z" },
+        { email: "nick@fiitco.ca", password: btoa("fiitco2024"), fullName: "Nick Radionov", displayName: "Nick R.", role: "instructor", instructorId: "INS-05", status: "active", securityQuestion: "What is your favourite fitness exercise?", securityAnswer: "yoga", createdAt: "2024-10-01T00:00:00.000Z" },
       ];
       for (const u of seedUsers) await ctx.db.insert("users", u);
       usersSeededCount = seedUsers.length;

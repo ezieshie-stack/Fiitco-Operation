@@ -527,10 +527,10 @@ export default function InstructorsPage() {
                   type="text"
                   value={form.displayName}
                   onChange={(e) => setForm({ ...form, displayName: e.target.value })}
-                  placeholder="e.g. Jason V."
+                  placeholder="e.g. Jason B."
                 />
                 <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-                  e.g. Jason V.
+                  e.g. Jason B.
                 </p>
               </div>
 
