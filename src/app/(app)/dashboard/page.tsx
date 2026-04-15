@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -142,7 +142,6 @@ function CategoryBreakdown({ classes }: { classes: { categoryName: string }[] })
 // ── Main Page ──────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { currentUser } = useAuth();
-  const forceReseed     = useMutation(api.mutations.forceReseed);
   const classes         = useQuery(api.queries.getClasses)          ?? [];
   const instructors     = useQuery(api.queries.getInstructors)      ?? [];
   const categories      = useQuery(api.queries.getCategories)       ?? [];
@@ -155,7 +154,6 @@ export default function DashboardPage() {
   const missingLogs     = useQuery(api.queries.getMissingDeliveryLogs) ?? [];
 
   const [view, setView]       = useState<ViewFilter>("today");
-  const [seeding, setSeeding] = useState(false);
   const [clock, setClock]     = useState("");
 
   // Live clock
@@ -165,19 +163,6 @@ export default function DashboardPage() {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
-
-  // Auto-seed if no schedule data
-  useEffect(() => {
-    if (allSlots !== undefined && allSlots.length === 0 && classes !== undefined) {
-      forceReseed();
-    }
-  }, [allSlots?.length]);
-
-  async function handleReseed() {
-    setSeeding(true);
-    await forceReseed();
-    setSeeding(false);
-  }
 
   const today     = todayISO();
   const tomorrow  = tomorrowISO();
@@ -232,9 +217,19 @@ export default function DashboardPage() {
             <p className="dashboard-clock" style={{ fontSize: 22, fontWeight: 600, color: "var(--text-main)", fontVariantNumeric: "tabular-nums" }}>{clock}</p>
             <p style={{ fontSize: 12, color: "var(--text-muted)" }}>{formatLongDate(today)}</p>
           </div>
-          <button onClick={handleReseed} disabled={seeding} className="btn-ghost" style={{ fontSize: 12 }}>
-            {seeding ? "↺ Loading…" : "↺ Reload Data"}
-          </button>
+          <div
+            style={{
+              padding: "8px 12px",
+              borderRadius: "var(--radius-pill)",
+              background: "var(--bg-beige)",
+              color: "var(--text-muted)",
+              fontSize: 12,
+              fontWeight: 500,
+              textAlign: "right",
+            }}
+          >
+            Workbook data is now managed via the import script.
+          </div>
         </div>
       </div>
 
