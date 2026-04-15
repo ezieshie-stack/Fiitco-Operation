@@ -9,8 +9,10 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as guestPasses from "../guestPasses.js";
 import type * as mutations from "../mutations.js";
 import type * as queries from "../queries.js";
+import type * as referrals from "../referrals.js";
 
 import type {
   ApiFromModules,
@@ -20,8 +22,10 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  guestPasses: typeof guestPasses;
   mutations: typeof mutations;
   queries: typeof queries;
+  referrals: typeof referrals;
 }>;
 
 /**

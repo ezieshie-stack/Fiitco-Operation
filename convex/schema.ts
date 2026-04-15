@@ -195,6 +195,45 @@ export default defineSchema({
     description: v.string(),      // human-readable description
   }).index("by_status", ["status"]),
 
+  // Refer-a-friend submissions from the customer website or walked in at the
+  // front desk. Staff mark completed once the friend signs up, then rewarded
+  // once the 50% discount is manually applied in Mindbody.
+  referrals: defineTable({
+    referrerFirstName: v.string(),
+    referrerPhone: v.string(),
+    friendFirstName: v.string(),
+    friendPhone: v.string(),
+    status: v.string(),              // "pending" | "completed" | "rewarded"
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+    rewardedAt: v.optional(v.number()),
+    createdBy: v.string(),           // "website" | "front-desk"
+    notes: v.optional(v.string()),
+  })
+    .index("by_referrerPhone", ["referrerPhone"])
+    .index("by_friendPhone", ["friendPhone"])
+    .index("by_status", ["status"]),
+
+  // Monthly guest passes. Members get MONTHLY_LIMIT=2 per calendar month.
+  // monthKey ("YYYY-MM") drives the monthly limit check via compound index.
+  guestPasses: defineTable({
+    memberFirstName: v.string(),
+    memberPhone: v.string(),
+    guestFirstName: v.string(),
+    guestPhone: v.string(),
+    status: v.string(),              // "pending" | "redeemed" | "expired"
+    createdAt: v.number(),
+    redeemedAt: v.optional(v.number()),
+    monthKey: v.string(),            // "YYYY-MM"
+    createdBy: v.string(),           // "website" | "front-desk"
+    redeemedBy: v.optional(v.string()),
+    notes: v.optional(v.string()),
+  })
+    .index("by_memberPhone", ["memberPhone"])
+    .index("by_guestPhone", ["guestPhone"])
+    .index("by_status", ["status"])
+    .index("by_monthKey_memberPhone", ["monthKey", "memberPhone"]),
+
   users: defineTable({
     email: v.string(),
     password: v.string(),           // base64-encoded (demo only)

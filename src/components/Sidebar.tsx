@@ -18,6 +18,7 @@ const nav = [
   { label: "Equipment",           href: "/equipment" },
   { label: "Training Pathways",   href: "/pathways" },
   { label: "Client Journey",      href: "/client-journey" },
+  { label: "Front Desk",          href: "/front-desk" },
 ];
 
 export default function Sidebar({ open, onClose }: { open?: boolean; onClose?: () => void } = {}) {
