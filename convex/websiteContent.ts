@@ -1174,8 +1174,12 @@ export const listWebsiteImages = adminQuery({
 });
 
 /** Website-side lookup by slot. Returns null if no record exists. */
+// PUBLIC: called by customer site <LiveImage> components anonymously, AND
+// by the staff portal's website-images admin page (which auto-attaches a
+// sessionToken via useAuthedQuery). sessionToken is declared optional and
+// ignored so Convex's strict arg validator accepts calls from both surfaces.
 export const getWebsiteImageBySlot = query({
-  args: { slot: v.string() },
+  args: { slot: v.string(), sessionToken: v.optional(v.string()) },
   handler: async (ctx, { slot }) => {
     const match = await ctx.db
       .query("websiteImages")

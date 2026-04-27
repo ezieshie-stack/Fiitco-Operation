@@ -21,9 +21,15 @@ export const getTiers         = authedQuery({ args: {}, handler: async (ctx) => 
 export const getEquipment     = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("equipment").collect() });
 export const getPathways      = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("pathways").collect() });
 export const getExercises     = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("exercises").collect() });
-// PUBLIC: hit anonymously by the customer site's schedule widget.
-// See header comment above for rationale.
-export const getWeeklySchedule= query({ args: {}, handler: async (ctx) => ctx.db.query("weeklySchedule").collect() });
+// PUBLIC: hit anonymously by the customer site's schedule widget AND
+// by the staff portal (which auto-attaches a sessionToken via the
+// useAuthedQuery hook). The function ignores the token entirely; we
+// just declare it as optional so Convex's strict arg validator doesn't
+// reject staff-side calls.
+export const getWeeklySchedule = query({
+  args: { sessionToken: v.optional(v.string()) },
+  handler: async (ctx) => ctx.db.query("weeklySchedule").collect(),
+});
 export const getClassPrograms = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("classPrograms").collect() });
 export const getDeliveryLog   = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("deliveryLog").collect() });
 export const getAvailability  = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("availability").collect() });
