@@ -1,12 +1,17 @@
+import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { authedQuery } from "./authHelpers";
 
-// Every query in this module reads internal operational data (categories,
-// classes, instructors, schedules, exercise library, delivery log, etc.)
-// that should never be exposed to anonymous callers. They all require an
-// authenticated session via `authedQuery`. Any active user (instructor or
-// admin) can read; the React layer additionally hides admin-only views by
-// inspecting `currentUser.role`.
+// Most queries in this module read internal operational data (categories,
+// classes, instructors, exercise library, delivery log, etc.) that should
+// never be exposed to anonymous callers. They use `authedQuery`. Any active
+// user (instructor or admin) can read; the React layer additionally hides
+// admin-only views by inspecting `currentUser.role`.
+//
+// Exception: `getWeeklySchedule` stays public because the customer-facing
+// website (fiitco.ca) renders the upcoming class schedule from it for
+// anonymous visitors. The data exposed (date, time, class name, instructor
+// display name) is intentionally public marketing information.
 
 export const getCategories    = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("categories").collect() });
 export const getSubcategories = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("subcategories").collect() });
@@ -16,7 +21,9 @@ export const getTiers         = authedQuery({ args: {}, handler: async (ctx) => 
 export const getEquipment     = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("equipment").collect() });
 export const getPathways      = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("pathways").collect() });
 export const getExercises     = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("exercises").collect() });
-export const getWeeklySchedule= authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("weeklySchedule").collect() });
+// PUBLIC: hit anonymously by the customer site's schedule widget.
+// See header comment above for rationale.
+export const getWeeklySchedule= query({ args: {}, handler: async (ctx) => ctx.db.query("weeklySchedule").collect() });
 export const getClassPrograms = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("classPrograms").collect() });
 export const getDeliveryLog   = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("deliveryLog").collect() });
 export const getAvailability  = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("availability").collect() });
