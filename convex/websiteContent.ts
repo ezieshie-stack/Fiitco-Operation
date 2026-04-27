@@ -1174,7 +1174,7 @@ export const listWebsiteImages = adminQuery({
 });
 
 /** Website-side lookup by slot. Returns null if no record exists. */
-export const getWebsiteImageBySlot = adminQuery({
+export const getWebsiteImageBySlot = query({
   args: { slot: v.string() },
   handler: async (ctx, { slot }) => {
     const match = await ctx.db
