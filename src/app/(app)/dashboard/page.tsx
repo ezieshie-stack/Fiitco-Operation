@@ -5,6 +5,7 @@ import { useAuthedQuery as useQuery } from "@/hooks/useAuthedConvex";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import MonthlyReportDownload from "@/components/MonthlyReportDownload";
 
 // ── helpers ────────────────────────────────────────────────────────────────
 function todayISO() { return new Date().toISOString().split("T")[0]; }
@@ -459,6 +460,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Links */}
+          {/* Admin-only: monthly Excel export of front-desk activity (referrals
+              + guest passes). Lives in the right column so admins see it on
+              landing without scrolling, but trainers don't get the noise. */}
+          {currentUser?.role === "admin" && <MonthlyReportDownload />}
+
           <div style={{ background: "var(--bg-panel)", borderRadius: "var(--radius-card)", padding: "20px 24px", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
             <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", marginBottom: 14 }}>Quick Access</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

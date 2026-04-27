@@ -490,4 +490,25 @@ export default defineSchema({
     windowStart: v.number(), // epoch ms; rolling window anchor
     count: v.number(),       // attempts in the current window
   }).index("by_key", ["key"]),
+
+  // Editable legal documents (privacy policy, terms, accessibility).
+  // Customer site reads these via getLegalDocBySlug — when a record
+  // exists it overrides the hardcoded fallback page on the customer
+  // site, so Arden can update legal text without a developer.
+  //
+  // bodyJson is TipTap JSON serialized as a string, same shape as
+  // blogPosts.bodyJson. Customer site renders it via the existing
+  // <TipTapRenderer> component.
+  //
+  // The slug is the URL path the customer site uses ("privacy-policy",
+  // "terms", "accessibility"), so adding a new doc is a one-row insert
+  // plus a matching Next.js page route.
+  legalDocs: defineTable({
+    slug: v.string(),                // unique URL identifier
+    title: v.string(),               // page heading
+    bodyJson: v.string(),            // TipTap JSON content
+    effectiveDate: v.optional(v.string()),  // human-readable, e.g. "April 13, 2026"
+    lastEditedAt: v.string(),        // ISO datetime
+    lastEditedBy: v.string(),        // editor's display name (audit)
+  }).index("by_slug", ["slug"]),
 });

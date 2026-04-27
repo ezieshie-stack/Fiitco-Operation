@@ -43,6 +43,7 @@ const websiteCmsGroup = {
     { label: "FAQ",           href: "/website-faq",           built: true },
     { label: "Promo Videos",  href: "/website-promo-videos",  built: true },
     { label: "Images",        href: "/website-images",        built: true },
+    { label: "Legal Docs",    href: "/website-legal-docs",    built: true },
   ],
 };
 

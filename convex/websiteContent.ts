@@ -1258,3 +1258,84 @@ export const hardDeleteWebsiteImage = adminMutation({
   args: { id: v.id("websiteImages") },
   handler: async (ctx, { id }) => { await ctx.db.delete(id); return id; },
 });
+
+// ──────────────────────────────────────────────────────────────────────────
+// LEGAL DOCS — Privacy Policy, Terms, Accessibility (and any future
+// legal text). Editable from the staff portal, rendered on the customer
+// website via TipTap JSON. Public reads accept an optional sessionToken
+// so both the customer site (anonymous) and the staff portal preview
+// (authed) can call the same function.
+// ──────────────────────────────────────────────────────────────────────────
+
+export const listLegalDocs = adminQuery({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("legalDocs").collect();
+    // Stable order: alphabetical by slug. There are only ~3 of these so
+    // sorting at read time is cheap.
+    return [...all].sort((a, b) => a.slug.localeCompare(b.slug));
+  },
+});
+
+/** PUBLIC: customer site fetches legal text by slug. Returns null when
+ *  the doc has never been edited so the customer site can fall back to
+ *  its hardcoded copy. sessionToken is optional and ignored — declared
+ *  so the staff portal's preview path (useAuthedQuery) doesn't error. */
+export const getLegalDocBySlug = query({
+  args: { slug: v.string(), sessionToken: v.optional(v.string()) },
+  handler: async (ctx, { slug }) => {
+    const doc = await ctx.db
+      .query("legalDocs")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .first();
+    return doc ?? null;
+  },
+});
+
+/** Upsert a legal doc by slug. Slug is the natural key — there's only
+ *  ever one row per slug. */
+export const updateLegalDoc = adminMutation({
+  args: {
+    slug: v.string(),
+    title: v.string(),
+    bodyJson: v.string(),
+    effectiveDate: v.optional(v.string()),
+  },
+  handler: async (ctx, args, user) => {
+    const now = new Date().toISOString();
+    const existing = await ctx.db
+      .query("legalDocs")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .first();
+
+    const patch = {
+      title: args.title,
+      bodyJson: args.bodyJson,
+      effectiveDate: args.effectiveDate,
+      lastEditedAt: now,
+      lastEditedBy: user.displayName || user.fullName || user.email,
+    };
+
+    if (existing) {
+      await ctx.db.patch(existing._id, patch);
+      return existing._id;
+    }
+    return await ctx.db.insert("legalDocs", { slug: args.slug, ...patch });
+  },
+});
+
+/** Delete (hard) a legal doc by slug. Customer site falls back to its
+ *  hardcoded copy when the row is missing. */
+export const deleteLegalDoc = adminMutation({
+  args: { slug: v.string() },
+  handler: async (ctx, { slug }) => {
+    const existing = await ctx.db
+      .query("legalDocs")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .first();
+    if (existing) {
+      await ctx.db.delete(existing._id);
+    }
+    return { deleted: !!existing };
+  },
+});
