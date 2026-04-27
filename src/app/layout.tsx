@@ -20,6 +20,13 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "FIIT Co. — Class Management",
   description: "Internal class management tool for FIIT Co. Boxing & Fitness",
+  // Internal admin tool — do NOT index. Belts-and-suspenders alongside
+  // the robots.ts file in this directory.
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
