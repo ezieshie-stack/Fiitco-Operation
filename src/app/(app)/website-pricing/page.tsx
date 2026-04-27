@@ -207,8 +207,8 @@ export default function WebsitePricingPage() {
                 <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--text-main)", margin: 0 }}>{label}</h3>
                 <span style={{ fontSize: 12, color: "var(--text-muted)" }}>· {sectionPlans.length} plan{sectionPlans.length !== 1 ? "s" : ""}</span>
               </div>
-              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.06)", overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
                   <thead>
                     <tr style={{ background: "#F9F5F0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                       <th style={th}>Price</th>

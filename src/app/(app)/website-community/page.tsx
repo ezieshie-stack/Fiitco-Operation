@@ -260,8 +260,8 @@ export default function WebsiteCommunityPage() {
       ) : collaborators.length === 0 ? (
         <p style={{ color: "var(--text-muted)" }}>No collaborators yet.</p>
       ) : (
-        <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.06)", overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 720 }}>
             <thead>
               <tr style={{ background: "#F9F5F0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                 <th style={th}>Order</th>
