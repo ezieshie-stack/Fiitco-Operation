@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server";
+import { adminMutation, authedMutation, authedQuery, checkAndIncrementRateLimit } from "./authHelpers";
 import { v } from "convex/values";
 
 const normalizePhone = (raw: string) => raw.replace(/\D/g, "");
@@ -29,6 +30,19 @@ export const create = mutation({
       throw new Error("Please include valid phone numbers for both people.");
     }
 
+    // Throttle by referrer phone — 5 referrals per 15 min is more than any
+    // legitimate member needs and stops scripted spam against the form.
+    const rl = await checkAndIncrementRateLimit(
+      ctx,
+      `referral:${referrerPhone}`,
+      5
+    );
+    if (!rl.allowed) {
+      throw new Error(
+        "You're submitting referrals too quickly. Try again in a few minutes."
+      );
+    }
+
     // Duplicate check — same pair, still pending
     const existing = await ctx.db
       .query("referrals")
@@ -56,7 +70,7 @@ export const create = mutation({
   },
 });
 
-export const markCompleted = mutation({
+export const markCompleted = authedMutation({
   args: { id: v.id("referrals") },
   handler: async (ctx, { id }) => {
     await ctx.db.patch(id, {
@@ -66,7 +80,7 @@ export const markCompleted = mutation({
   },
 });
 
-export const markRewarded = mutation({
+export const markRewarded = authedMutation({
   args: { id: v.id("referrals") },
   handler: async (ctx, { id }) => {
     await ctx.db.patch(id, {
@@ -76,21 +90,21 @@ export const markRewarded = mutation({
   },
 });
 
-export const updateNotes = mutation({
+export const updateNotes = authedMutation({
   args: { id: v.id("referrals"), notes: v.string() },
   handler: async (ctx, { id, notes }) => {
     await ctx.db.patch(id, { notes });
   },
 });
 
-export const remove = mutation({
+export const remove = adminMutation({
   args: { id: v.id("referrals") },
   handler: async (ctx, { id }) => {
     await ctx.db.delete(id);
   },
 });
 
-export const list = query({
+export const list = authedQuery({
   args: { status: v.optional(v.string()) },
   handler: async (ctx, { status }) => {
     const all = await ctx.db.query("referrals").collect();
@@ -99,7 +113,7 @@ export const list = query({
   },
 });
 
-export const searchByReferrer = query({
+export const searchByReferrer = authedQuery({
   args: { phone: v.string() },
   handler: async (ctx, { phone }) => {
     const normalized = normalizePhone(phone);
@@ -110,7 +124,7 @@ export const searchByReferrer = query({
   },
 });
 
-export const searchByFriend = query({
+export const searchByFriend = authedQuery({
   args: { phone: v.string() },
   handler: async (ctx, { phone }) => {
     const normalized = normalizePhone(phone);

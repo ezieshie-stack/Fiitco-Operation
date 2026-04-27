@@ -1,13 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useConvex } from "convex/react";
-import { useMutation } from "convex/react";
+import { useConvex, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 type View = "login" | "signup" | "forgot";
-type ForgotStep = 1 | 2 | 3;
+type ForgotStep = 1 | 2 | 3 | "linkSent";
 
 const SECURITY_QUESTIONS = [
   "What city were you born in?",
@@ -99,9 +98,20 @@ const inlineErrorStyle: React.CSSProperties = {
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
+  // Used only for the on-demand `getUserByEmail` lookup in the forgot-password
+  // step 1; everything else uses dedicated `useMutation` hooks.
   const convex = useConvex();
   const signupUser = useMutation(api.auth.signupUser);
-  const resetPassword = useMutation(api.auth.resetPassword);
+  // Combined verify-answer + set-new-password atomic mutation. Replaces
+  // the dangerous public `auth.resetPassword` (now removed). Used by the
+  // forgot-password Step 3 flow.
+  const resetPasswordWithSecurityAnswer = useMutation(
+    api.auth.resetPasswordWithSecurityAnswer
+  );
+  const verifySecurityAnswer = useMutation(api.auth.verifySecurityAnswer);
+  const requestPasswordReset = useMutation(
+    api.passwordReset.requestPasswordReset
+  );
 
   const [view, setView] = useState<View>("login");
 
@@ -219,14 +229,26 @@ export default function LoginPage() {
     setForgotError("");
     setForgotSubmitting(true);
     try {
-      const result = await convex.query(api.auth.getUserByEmail, {
-        email: forgotEmail.toLowerCase().trim(),
+      const normalisedEmail = forgotEmail.toLowerCase().trim();
+
+      // Look up the user. If they have a security question set, run the
+      // existing Q&A flow. If they don't (hidden dev accounts, or any user
+      // whose securityQuestion is blank), send an email reset link instead.
+      // Unknown emails silently fall through to the same "check your email"
+      // message so we never leak whether an address exists.
+      const lookup = await convex.query(api.auth.getUserByEmail, {
+        email: normalisedEmail,
       });
-      if (result && result.securityQuestion) {
-        setForgotSecurityQ(result.securityQuestion);
+      const hasSecurityQuestion = Boolean(lookup?.securityQuestion);
+
+      if (hasSecurityQuestion) {
+        setForgotSecurityQ(lookup!.securityQuestion!);
         setForgotStep(2);
       } else {
-        setForgotError("No account found with that email.");
+        // Fire the reset-link send (server silently no-ops for unknown
+        // emails). We don't await the email action; UI switches immediately.
+        void requestPasswordReset({ email: normalisedEmail });
+        setForgotStep("linkSent");
       }
     } catch (err: any) {
       setForgotError(err?.message ?? "Something went wrong. Please try again.");
@@ -240,12 +262,16 @@ export default function LoginPage() {
     setForgotError("");
     setForgotSubmitting(true);
     try {
-      const result = await convex.query(api.auth.verifySecurityAnswer, {
+      const result = await verifySecurityAnswer({
         email: forgotEmail.toLowerCase().trim(),
         answer: forgotAnswer.trim(),
       });
       if (result.success) {
         setForgotStep(3);
+      } else if ("throttled" in result && result.throttled) {
+        setForgotError(
+          "Too many attempts. Please wait a few minutes before trying again."
+        );
       } else {
         setForgotError(
           "Incorrect answer. If you\u2019ve also forgotten your security answer, please contact your admin to reset your password."
@@ -273,11 +299,21 @@ export default function LoginPage() {
 
     setForgotSubmitting(true);
     try {
-      await resetPassword({
+      // Atomic: re-verifies the security answer server-side and only then
+      // updates the password. Step 2's success doesn't grant a separate
+      // token — the answer must come back in this same call.
+      const result = await resetPasswordWithSecurityAnswer({
         email: forgotEmail.toLowerCase().trim(),
+        answer: forgotAnswer.trim(),
         newPassword: forgotNewPass,
       });
-      setForgotSuccess(true);
+      if (result.success) {
+        setForgotSuccess(true);
+      } else {
+        setForgotError(
+          result.message ?? "Password reset failed. Please try again."
+        );
+      }
     } catch (err: any) {
       setForgotError(err?.message ?? "Password reset failed. Please try again.");
     } finally {
@@ -745,8 +781,9 @@ export default function LoginPage() {
                           lineHeight: 1.5,
                         }}
                       >
-                        Enter the email address associated with your account and
-                        we will verify your identity with a security question.
+                        Enter the email address associated with your account.
+                        We&apos;ll send you a reset link or ask your security
+                        question, depending on how your account is set up.
                       </p>
                       <div style={{ marginBottom: 20 }}>
                         <label htmlFor="forgot-email" style={labelStyle}>
@@ -892,6 +929,25 @@ export default function LoginPage() {
                         <div style={errorBoxStyle}>{forgotError}</div>
                       )}
                     </form>
+                  )}
+
+                  {/* Neutral "check your email" state — covers both the dev
+                      magic-link case and any unknown email. Never reveals
+                      which bucket the address falls into. */}
+                  {forgotStep === "linkSent" && (
+                    <div style={successBoxStyle}>
+                      If that email belongs to an account we can reset, we&apos;ve
+                      sent you the next step. Check your inbox (and spam folder)
+                      within the next minute or two. Links expire after 15 minutes.
+                      <br />
+                      <button
+                        type="button"
+                        style={{ ...linkStyle, marginTop: 8, display: "inline-block", color: "#2E7D32" }}
+                        onClick={() => switchView("login")}
+                      >
+                        Back to Sign In
+                      </button>
+                    </div>
                   )}
                 </>
               )}

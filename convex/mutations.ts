@@ -1,7 +1,7 @@
-import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { adminMutation, authedMutation } from "./authHelpers";
 
-export const seedData = mutation({
+export const seedData = adminMutation({
   args: {},
   handler: async (ctx) => {
     const existingCats = await ctx.db.query("categories").collect();
@@ -65,7 +65,7 @@ export const seedData = mutation({
   },
 });
 
-export const addClass = mutation({
+export const addClass = adminMutation({
   args: {
     classId: v.string(), categoryId: v.string(), categoryName: v.string(),
     subcategoryName: v.optional(v.string()), name: v.string(), tier: v.string(),
@@ -74,7 +74,7 @@ export const addClass = mutation({
   handler: async (ctx, args) => ctx.db.insert("classes", { ...args, active: true }),
 });
 
-export const addInstructor = mutation({
+export const addInstructor = adminMutation({
   args: {
     instructorId: v.string(), fullName: v.string(), displayName: v.string(),
     specialisations: v.array(v.string()), certifications: v.array(v.string()),
@@ -84,7 +84,7 @@ export const addInstructor = mutation({
   handler: async (ctx, args) => ctx.db.insert("instructors", { ...args, status: "Active" }),
 });
 
-export const addScheduleSlot = mutation({
+export const addScheduleSlot = adminMutation({
   args: {
     date: v.string(),
     dayOfWeek: v.string(),
@@ -134,18 +134,18 @@ export const addScheduleSlot = mutation({
   },
 });
 
-export const deleteScheduleSlot = mutation({
+export const deleteScheduleSlot = adminMutation({
   args: { id: v.id("weeklySchedule") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
-export const acknowledgeBufferOverride = mutation({
+export const acknowledgeBufferOverride = authedMutation({
   args: { id: v.id("weeklySchedule") },
   handler: async (ctx, args) =>
     ctx.db.patch(args.id, { bufferOverrideAcknowledged: true }),
 });
 
-export const addEquipment = mutation({
+export const addEquipment = adminMutation({
   args: {
     equipmentId: v.string(),
     name: v.string(),
@@ -157,12 +157,12 @@ export const addEquipment = mutation({
   handler: async (ctx, args) => ctx.db.insert("equipment", { ...args, active: true }),
 });
 
-export const deleteEquipment = mutation({
+export const deleteEquipment = adminMutation({
   args: { id: v.id("equipment") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
-export const addCategory = mutation({
+export const addCategory = adminMutation({
   args: {
     categoryId: v.string(),
     name: v.string(),
@@ -173,7 +173,7 @@ export const addCategory = mutation({
   handler: async (ctx, args) => ctx.db.insert("categories", { ...args, active: true }),
 });
 
-export const updateCategory = mutation({
+export const updateCategory = adminMutation({
   args: {
     id: v.id("categories"),
     name: v.string(),
@@ -214,7 +214,7 @@ export const updateCategory = mutation({
   },
 });
 
-export const deleteCategory = mutation({
+export const deleteCategory = adminMutation({
   args: { id: v.id("categories") },
   handler: async (ctx, args) => {
     const cat = await ctx.db.get(args.id);
@@ -253,7 +253,7 @@ export const deleteCategory = mutation({
 });
 
 // ── Equipment ──────────────────────────────────────────────────────────────
-export const updateEquipment = mutation({
+export const updateEquipment = adminMutation({
   args: {
     id: v.id("equipment"),
     name: v.string(),
@@ -270,7 +270,7 @@ export const updateEquipment = mutation({
 });
 
 // ── Schedule ────────────────────────────────────────────────────────────────
-export const updateScheduleSlot = mutation({
+export const updateScheduleSlot = adminMutation({
   args: {
     id: v.id("weeklySchedule"),
     startTime: v.string(),
@@ -305,7 +305,7 @@ export const updateScheduleSlot = mutation({
 });
 
 // ── Classes ─────────────────────────────────────────────────────────────────
-export const updateClass = mutation({
+export const updateClass = adminMutation({
   args: {
     id: v.id("classes"),
     name: v.string(),
@@ -322,13 +322,13 @@ export const updateClass = mutation({
   },
 });
 
-export const deleteClass = mutation({
+export const deleteClass = adminMutation({
   args: { id: v.id("classes") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
 // ── Lesson Plans (Class Programs) ──────────────────────────────────────────
-export const addClassProgram = mutation({
+export const addClassProgram = adminMutation({
   args: {
     classId: v.string(),
     className: v.string(),
@@ -354,7 +354,7 @@ export const addClassProgram = mutation({
   }),
 });
 
-export const updateClassProgram = mutation({
+export const updateClassProgram = adminMutation({
   args: {
     id: v.id("classPrograms"),
     classId: v.string(),
@@ -383,19 +383,19 @@ export const updateClassProgram = mutation({
   },
 });
 
-export const deleteClassProgram = mutation({
+export const deleteClassProgram = adminMutation({
   args: { id: v.id("classPrograms") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
-export const approveClassProgram = mutation({
+export const approveClassProgram = adminMutation({
   args: { id: v.id("classPrograms"), approvedBy: v.string() },
   handler: async (ctx, args) =>
     ctx.db.patch(args.id, { status: "Approved", approvedAt: new Date().toISOString(), approvedBy: args.approvedBy }),
 });
 
 // ── Delivery Log ────────────────────────────────────────────────────────────
-export const addDeliveryLog = mutation({
+export const addDeliveryLog = authedMutation({
   args: {
     date: v.string(),
     classId: v.string(),
@@ -413,7 +413,7 @@ export const addDeliveryLog = mutation({
   handler: async (ctx, args) => ctx.db.insert("deliveryLog", args),
 });
 
-export const updateDeliveryLog = mutation({
+export const updateDeliveryLog = authedMutation({
   args: {
     id: v.id("deliveryLog"),
     date: v.string(),
@@ -435,13 +435,13 @@ export const updateDeliveryLog = mutation({
   },
 });
 
-export const deleteDeliveryLog = mutation({
+export const deleteDeliveryLog = adminMutation({
   args: { id: v.id("deliveryLog") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
 // ── Pathways ────────────────────────────────────────────────────────────────
-export const addPathway = mutation({
+export const addPathway = adminMutation({
   args: {
     pathwayId: v.string(),
     title: v.string(),
@@ -454,7 +454,7 @@ export const addPathway = mutation({
   handler: async (ctx, args) => ctx.db.insert("pathways", { ...args, active: true }),
 });
 
-export const updatePathway = mutation({
+export const updatePathway = adminMutation({
   args: {
     id: v.id("pathways"),
     title: v.string(),
@@ -471,13 +471,13 @@ export const updatePathway = mutation({
   },
 });
 
-export const deletePathway = mutation({
+export const deletePathway = adminMutation({
   args: { id: v.id("pathways") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
 // ── Exercises ───────────────────────────────────────────────────────────────
-export const addExercise = mutation({
+export const addExercise = adminMutation({
   args: {
     exerciseId: v.string(),
     name: v.string(),
@@ -490,7 +490,7 @@ export const addExercise = mutation({
   handler: async (ctx, args) => ctx.db.insert("exercises", { ...args, active: true }),
 });
 
-export const updateExercise = mutation({
+export const updateExercise = adminMutation({
   args: {
     id: v.id("exercises"),
     name: v.string(),
@@ -507,13 +507,13 @@ export const updateExercise = mutation({
   },
 });
 
-export const deleteExercise = mutation({
+export const deleteExercise = adminMutation({
   args: { id: v.id("exercises") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
 // ── Instructors ─────────────────────────────────────────────────────────────
-export const updateInstructor = mutation({
+export const updateInstructor = adminMutation({
   args: {
     id: v.id("instructors"),
     fullName: v.string(),
@@ -532,13 +532,13 @@ export const updateInstructor = mutation({
   },
 });
 
-export const deleteInstructor = mutation({
+export const deleteInstructor = adminMutation({
   args: { id: v.id("instructors") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
 // ── Availability ─────────────────────────────────────────────────────────────
-export const addAvailability = mutation({
+export const addAvailability = authedMutation({
   args: {
     instructorId: v.string(),
     instructorName: v.string(),
@@ -551,7 +551,7 @@ export const addAvailability = mutation({
   handler: async (ctx, args) => ctx.db.insert("availability", args),
 });
 
-export const updateAvailability = mutation({
+export const updateAvailability = authedMutation({
   args: {
     id: v.id("availability"),
     instructorId: v.string(),
@@ -568,14 +568,14 @@ export const updateAvailability = mutation({
   },
 });
 
-export const deleteAvailability = mutation({
+export const deleteAvailability = adminMutation({
   args: { id: v.id("availability") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
 // ── Availability Exceptions ─────────────────────────────────────────────────
 // Date-specific overrides on top of the recurring `availability` default.
-export const addAvailabilityException = mutation({
+export const addAvailabilityException = authedMutation({
   args: {
     instructorId: v.string(),
     instructorName: v.string(),
@@ -592,13 +592,13 @@ export const addAvailabilityException = mutation({
     }),
 });
 
-export const deleteAvailabilityException = mutation({
+export const deleteAvailabilityException = adminMutation({
   args: { id: v.id("availabilityExceptions") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });
 
 // ── Force Reseed — clears all data and loads full Excel v4 dataset ─────────
-export const forceReseed = mutation({
+export const forceReseed = adminMutation({
   args: {},
   handler: async (ctx) => {
     // Clear all tables
@@ -1114,7 +1114,7 @@ async function insertRows(ctx: any, table: string, rows: Array<Record<string, un
   }
 }
 
-export const importWorkbookData = mutation({
+export const importWorkbookData = adminMutation({
   args: {
     dataset: v.any(),
     clearPendingChanges: v.optional(v.boolean()),
@@ -1170,7 +1170,7 @@ function timeToMinutes(time: string): number {
 
 // ── Pending Changes / Approval Workflow ──────────────────────────────────────
 
-export const submitPendingChange = mutation({
+export const submitPendingChange = authedMutation({
   args: {
     tableName: v.string(),
     action: v.string(),
@@ -1189,7 +1189,7 @@ export const submitPendingChange = mutation({
   },
 });
 
-export const approvePendingChange = mutation({
+export const approvePendingChange = adminMutation({
   args: { id: v.id("pendingChanges"), reviewedBy: v.string() },
   handler: async (ctx, args) => {
     const change = await ctx.db.get(args.id);
@@ -1260,7 +1260,7 @@ export const approvePendingChange = mutation({
   },
 });
 
-export const denyPendingChange = mutation({
+export const denyPendingChange = adminMutation({
   args: { id: v.id("pendingChanges"), reviewedBy: v.string(), reviewNote: v.optional(v.string()) },
   handler: async (ctx, args) => {
     const change = await ctx.db.get(args.id);
@@ -1276,7 +1276,7 @@ export const denyPendingChange = mutation({
 });
 
 // ── Client Journeys ────────────────────────────────────────────────────────
-export const addClientJourney = mutation({
+export const addClientJourney = authedMutation({
   args: {
     journeyId: v.string(),
     title: v.string(),
@@ -1293,7 +1293,7 @@ export const addClientJourney = mutation({
   handler: async (ctx, args) => ctx.db.insert("clientJourneys", { ...args, active: true }),
 });
 
-export const updateClientJourney = mutation({
+export const updateClientJourney = authedMutation({
   args: {
     id: v.id("clientJourneys"),
     title: v.string(),
@@ -1314,7 +1314,7 @@ export const updateClientJourney = mutation({
   },
 });
 
-export const deleteClientJourney = mutation({
+export const deleteClientJourney = adminMutation({
   args: { id: v.id("clientJourneys") },
   handler: async (ctx, args) => ctx.db.delete(args.id),
 });

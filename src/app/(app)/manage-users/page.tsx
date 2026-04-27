@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useAuthedQuery as useQuery, useAuthedMutation as useMutation } from "@/hooks/useAuthedConvex";
 import { api } from "../../../../convex/_generated/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Id } from "../../../../convex/_generated/dataModel";

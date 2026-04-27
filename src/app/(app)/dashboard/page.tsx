@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "convex/react";
+import { useAuthedQuery as useQuery } from "@/hooks/useAuthedConvex";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -228,7 +228,7 @@ export default function DashboardPage() {
               textAlign: "right",
             }}
           >
-            Workbook data is now managed via the import script.
+            Live data • Convex
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useAuthedQuery as useQuery, useAuthedMutation as useMutation } from "@/hooks/useAuthedConvex";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useAuth } from "@/contexts/AuthContext";
@@ -576,7 +576,7 @@ function ExceptionModal({
             </div>
             <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>
               {type === "unavailable"
-                ? "Overrides your standing default — you won&rsquo;t be scheduled."
+                ? "Overrides your standing default - you won't be scheduled."
                 : "Adds a one-off window on top of your standing default."}
             </p>
           </div>

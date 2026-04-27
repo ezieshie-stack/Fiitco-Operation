@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server";
+import { adminMutation, authedMutation, authedQuery, checkAndIncrementRateLimit } from "./authHelpers";
 import { v } from "convex/values";
 
 // Hardcoded for now — every active member gets this many guest passes per
@@ -40,6 +41,19 @@ export const create = mutation({
       throw new Error("Please include valid phone numbers for both people.");
     }
 
+    // Throttle by member phone — beyond the monthly cap, also stop scripted
+    // spam from spinning up rapid passes against the form.
+    const rl = await checkAndIncrementRateLimit(
+      ctx,
+      `guestPass:${memberPhone}`,
+      5
+    );
+    if (!rl.allowed) {
+      throw new Error(
+        "You're submitting passes too quickly. Try again in a few minutes."
+      );
+    }
+
     const monthKey = currentMonthKey();
 
     // Monthly cap check — count all passes this member has issued this month
@@ -76,7 +90,7 @@ export const create = mutation({
  * Front-desk walk-in: same rules as `create`, but the staff member is the
  * createdBy source so we can tell them apart in the dashboard.
  */
-export const createWalkIn = mutation({
+export const createWalkIn = authedMutation({
   args: {
     memberFirstName: v.string(),
     memberPhone: v.string(),
@@ -124,7 +138,7 @@ export const createWalkIn = mutation({
   },
 });
 
-export const redeem = mutation({
+export const redeem = authedMutation({
   args: { id: v.id("guestPasses"), staffName: v.string() },
   handler: async (ctx, { id, staffName }) => {
     const pass = await ctx.db.get(id);
@@ -143,21 +157,21 @@ export const redeem = mutation({
   },
 });
 
-export const expire = mutation({
+export const expire = adminMutation({
   args: { id: v.id("guestPasses") },
   handler: async (ctx, { id }) => {
     await ctx.db.patch(id, { status: "expired" });
   },
 });
 
-export const remove = mutation({
+export const remove = adminMutation({
   args: { id: v.id("guestPasses") },
   handler: async (ctx, { id }) => {
     await ctx.db.delete(id);
   },
 });
 
-export const list = query({
+export const list = authedQuery({
   args: { status: v.optional(v.string()) },
   handler: async (ctx, { status }) => {
     const all = await ctx.db.query("guestPasses").collect();
@@ -166,7 +180,7 @@ export const list = query({
   },
 });
 
-export const searchByMember = query({
+export const searchByMember = authedQuery({
   args: { phone: v.string() },
   handler: async (ctx, { phone }) => {
     const normalized = normalizePhone(phone);
@@ -177,7 +191,7 @@ export const searchByMember = query({
   },
 });
 
-export const searchByGuest = query({
+export const searchByGuest = authedQuery({
   args: { phone: v.string() },
   handler: async (ctx, { phone }) => {
     const normalized = normalizePhone(phone);

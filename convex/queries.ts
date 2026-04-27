@@ -1,22 +1,29 @@
-import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { authedQuery } from "./authHelpers";
 
-export const getCategories    = query({ args: {}, handler: async (ctx) => ctx.db.query("categories").collect() });
-export const getSubcategories = query({ args: {}, handler: async (ctx) => ctx.db.query("subcategories").collect() });
-export const getClasses       = query({ args: {}, handler: async (ctx) => ctx.db.query("classes").collect() });
-export const getInstructors   = query({ args: {}, handler: async (ctx) => ctx.db.query("instructors").collect() });
-export const getTiers         = query({ args: {}, handler: async (ctx) => ctx.db.query("tiers").collect() });
-export const getEquipment     = query({ args: {}, handler: async (ctx) => ctx.db.query("equipment").collect() });
-export const getPathways      = query({ args: {}, handler: async (ctx) => ctx.db.query("pathways").collect() });
-export const getExercises     = query({ args: {}, handler: async (ctx) => ctx.db.query("exercises").collect() });
-export const getWeeklySchedule= query({ args: {}, handler: async (ctx) => ctx.db.query("weeklySchedule").collect() });
-export const getClassPrograms = query({ args: {}, handler: async (ctx) => ctx.db.query("classPrograms").collect() });
-export const getDeliveryLog   = query({ args: {}, handler: async (ctx) => ctx.db.query("deliveryLog").collect() });
-export const getAvailability  = query({ args: {}, handler: async (ctx) => ctx.db.query("availability").collect() });
-export const getAvailabilityExceptions = query({ args: {}, handler: async (ctx) => ctx.db.query("availabilityExceptions").collect() });
-export const getClientJourneys= query({ args: {}, handler: async (ctx) => ctx.db.query("clientJourneys").collect() });
+// Every query in this module reads internal operational data (categories,
+// classes, instructors, schedules, exercise library, delivery log, etc.)
+// that should never be exposed to anonymous callers. They all require an
+// authenticated session via `authedQuery`. Any active user (instructor or
+// admin) can read; the React layer additionally hides admin-only views by
+// inspecting `currentUser.role`.
 
-export const getScheduleByWeek = query({
+export const getCategories    = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("categories").collect() });
+export const getSubcategories = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("subcategories").collect() });
+export const getClasses       = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("classes").collect() });
+export const getInstructors   = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("instructors").collect() });
+export const getTiers         = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("tiers").collect() });
+export const getEquipment     = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("equipment").collect() });
+export const getPathways      = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("pathways").collect() });
+export const getExercises     = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("exercises").collect() });
+export const getWeeklySchedule= authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("weeklySchedule").collect() });
+export const getClassPrograms = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("classPrograms").collect() });
+export const getDeliveryLog   = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("deliveryLog").collect() });
+export const getAvailability  = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("availability").collect() });
+export const getAvailabilityExceptions = authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("availabilityExceptions").collect() });
+export const getClientJourneys= authedQuery({ args: {}, handler: async (ctx) => ctx.db.query("clientJourneys").collect() });
+
+export const getScheduleByWeek = authedQuery({
   args: { weekDates: v.array(v.string()) },
   handler: async (ctx, args) => {
     const results = [];
@@ -31,7 +38,7 @@ export const getScheduleByWeek = query({
   },
 });
 
-export const getPendingChanges = query({
+export const getPendingChanges = authedQuery({
   args: { status: v.optional(v.string()) },
   handler: async (ctx, args) => {
     if (args.status) {
@@ -44,7 +51,7 @@ export const getPendingChanges = query({
   },
 });
 
-export const getPendingChangeCount = query({
+export const getPendingChangeCount = authedQuery({
   args: {},
   handler: async (ctx) => {
     const pending = await ctx.db.query("pendingChanges")
@@ -54,7 +61,7 @@ export const getPendingChangeCount = query({
   },
 });
 
-export const getMissingDeliveryLogs = query({
+export const getMissingDeliveryLogs = authedQuery({
   args: {},
   handler: async (ctx) => {
     const today = new Date().toISOString().split("T")[0];

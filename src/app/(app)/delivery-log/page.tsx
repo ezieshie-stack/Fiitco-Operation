@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useAuthedQuery as useQuery, useAuthedMutation as useMutation } from "@/hooks/useAuthedConvex";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useAuth } from "@/contexts/AuthContext";
@@ -51,8 +51,8 @@ interface ModalProps {
     notes?: string;
   } | null;
   prefill?: Partial<LogFormData> | null;
-  classes: { _id: Id<"classes">; name: string; categoryName?: string }[];
-  instructors: { _id: Id<"instructors">; name: string }[];
+  classes: { classId: string; name: string; categoryName?: string }[];
+  instructors: { instructorId: string; name: string }[];
   onClose: () => void;
   onSave: (data: {
     date: string;
@@ -73,8 +73,8 @@ interface ModalProps {
 function LogModal({ log, prefill, classes, instructors, onClose, onSave }: ModalProps) {
   const [form, setForm] = useState<LogFormData>({
     date: log?.date ?? prefill?.date ?? new Date().toISOString().slice(0, 10),
-    classId: log?.classId ?? prefill?.classId ?? (classes[0]?._id ?? ""),
-    instructorId: log?.instructorId ?? prefill?.instructorId ?? (instructors[0]?._id ?? ""),
+    classId: log?.classId ?? prefill?.classId ?? (classes[0]?.classId ?? ""),
+    instructorId: log?.instructorId ?? prefill?.instructorId ?? (instructors[0]?.instructorId ?? ""),
     actualAttendance: log?.actualAttendance ?? prefill?.actualAttendance ?? 0,
     maxCapacity: log?.maxCapacity ?? prefill?.maxCapacity ?? 20,
     wasPlanned: log?.wasPlanned ?? prefill?.wasPlanned ?? false,
@@ -89,8 +89,8 @@ function LogModal({ log, prefill, classes, instructors, onClose, onSave }: Modal
 
   const handleSave = async () => {
     if (!form.classId || !form.instructorId || !form.date) return;
-    const selectedClass      = classes.find(c => c._id === form.classId);
-    const selectedInstructor = instructors.find(i => i._id === form.instructorId);
+    const selectedClass      = classes.find(c => c.classId === form.classId);
+    const selectedInstructor = instructors.find(i => i.instructorId === form.instructorId);
     if (!selectedClass || !selectedInstructor) return;
 
     setSaving(true);
@@ -133,13 +133,13 @@ function LogModal({ log, prefill, classes, instructors, onClose, onSave }: Modal
           <div>
             <label className="field-label">Class</label>
             <select className="field-input" value={form.classId} onChange={e => set("classId", e.target.value)}>
-              {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+              {classes.map(c => <option key={c.classId} value={c.classId}>{c.name}</option>)}
             </select>
           </div>
           <div>
             <label className="field-label">Instructor</label>
             <select className="field-input" value={form.instructorId} onChange={e => set("instructorId", e.target.value)}>
-              {instructors.map(i => <option key={i._id} value={i._id}>{i.name}</option>)}
+              {instructors.map(i => <option key={i.instructorId} value={i.instructorId}>{i.name}</option>)}
             </select>
           </div>
           <div>
@@ -259,9 +259,10 @@ export default function DeliveryLogPage() {
 
   const logs            = useQuery(api.queries.getDeliveryLog)  ?? [];
   const missingLogs     = useQuery(api.queries.getMissingDeliveryLogs) ?? [];
-  const classes         = useQuery(api.queries.getClasses)      ?? [];
+  const classesRaw      = useQuery(api.queries.getClasses)      ?? [];
   const instructorsRaw  = useQuery(api.queries.getInstructors)  ?? [];
-  const instructors     = instructorsRaw.map(i => ({ _id: i._id, name: i.fullName }));
+  const classes         = classesRaw.map(c => ({ classId: c.classId, name: c.name, categoryName: c.categoryName }));
+  const instructors     = instructorsRaw.map(i => ({ instructorId: i.instructorId, name: i.fullName }));
 
   const addLog       = useMutation(api.mutations.addDeliveryLog);
   const updateLog    = useMutation(api.mutations.updateDeliveryLog);
