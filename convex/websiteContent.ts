@@ -1079,11 +1079,19 @@ export const listPromoVideos = adminQuery({
  * This is what the fiit-website <PromoSlot/> component calls.
  */
 export const listActivePromoVideosForSlot = query({
-  args: { pageSlot: v.string() },
-  handler: async (ctx, { pageSlot }) => {
+  // Accepts either `pageSlot` (current name) or `slot` (legacy name baked
+  // into the fiitco.ca production bundle that was built before the rename).
+  // Removing the `slot` alias will crash the live site until the client
+  // bundle is redeployed with the current name.
+  args: {
+    pageSlot: v.optional(v.string()),
+    slot: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const key = args.pageSlot ?? args.slot ?? "";
     const rows = await ctx.db
       .query("promoVideos")
-      .withIndex("by_pageSlot_active", (q) => q.eq("pageSlot", pageSlot).eq("active", true))
+      .withIndex("by_pageSlot_active", (q) => q.eq("pageSlot", key).eq("active", true))
       .collect();
     return [...rows].sort((a, b) => a.displayOrder - b.displayOrder);
   },
