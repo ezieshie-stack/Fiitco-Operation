@@ -34,6 +34,7 @@ const websiteCmsGroup = {
   basePath: "/website-",
   children: [
     { label: "Trainers",      href: "/website-trainers",      built: true },
+    { label: "Schedule",      href: "/website-schedule",      built: true },
     { label: "Community",     href: "/website-community",     built: true },
     { label: "Class Formats", href: "/website-class-formats", built: true },
     { label: "Pricing",       href: "/website-pricing",       built: true },
