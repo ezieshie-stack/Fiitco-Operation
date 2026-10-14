@@ -1,15 +1,17 @@
 "use client";
 
 /**
- * Website Schedule admin — tunes the weekly schedule for the public site
- * at fiitco.ca/schedule. Reads and writes the SAME `weeklySchedule` table
- * the operational /schedule uses, so edits here reach customers immediately
- * (the public query `getWeeklySchedule` is intentionally unauthenticated).
+ * Website Schedule admin — manages the recurring weekly schedule rendered
+ * on fiitco.ca's "FIIT Co Schedule" homepage section.
  *
- * Scope: light edits for the customer view (class, instructor, time,
- * capacity, Scheduled/Cancelled status). Delete here hard-removes the row.
- * For the ops-side version with buffer/availability conflict checks, use
- * /schedule.
+ * Reads/writes the `websiteSchedule` Convex table (recurring template,
+ * one row per class per day of week). Deliberately separate from the
+ * date-specific `weeklySchedule` the ops /schedule page edits.
+ *
+ * Scope: light editor — day of week, time, class, category, instructor,
+ * display order, active toggle. Delete hard-removes a row. Customers
+ * see edits on fiitco.ca within seconds (the public listActiveWebsiteSchedule
+ * query is unauthenticated).
  */
 
 import { useMemo, useState } from "react";
@@ -22,121 +24,59 @@ import type { Id } from "../../../../convex/_generated/dataModel";
 import { useRequireAdmin } from "@/hooks/useRequireAdmin";
 
 // ── helpers ───────────────────────────────────────────────────────────────
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
-const STATUS_OPTIONS = ["Scheduled", "Cancelled"] as const;
+const DAYS_OF_WEEK = [
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+] as const;
+type DayOfWeek = (typeof DAYS_OF_WEEK)[number];
 
-function getWeekDates(anchor: Date): string[] {
-  const monday = new Date(anchor);
-  monday.setDate(anchor.getDate() - ((anchor.getDay() + 6) % 7));
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d.toISOString().split("T")[0];
-  });
-}
-
-function parseIsoDate(iso: string): Date {
-  const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d);
-}
-
-function formatDisplayDate(iso: string): string {
-  return parseIsoDate(iso).toLocaleDateString("en-CA", {
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function formatRange(dates: string[]): string {
-  const first = parseIsoDate(dates[0]);
-  const last = parseIsoDate(dates[dates.length - 1]);
-  const sameMonth = first.getMonth() === last.getMonth();
-  const firstFmt = first.toLocaleDateString("en-CA", {
-    month: "short",
-    day: "numeric",
-  });
-  const lastFmt = last.toLocaleDateString("en-CA", {
-    month: sameMonth ? undefined : "short",
-    day: "numeric",
-    year: "numeric",
-  });
-  return `${firstFmt} – ${lastFmt}`;
-}
-
-function timeToMinutes(t: string): number {
-  const [h, m] = t.split(":").map(Number);
-  return h * 60 + m;
-}
-
-function addMinutes(t: string, mins: number): string {
-  const total = timeToMinutes(t) + mins;
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}
-
-// ── types ──────────────────────────────────────────────────────────────────
-interface SlotDoc {
-  _id: Id<"weeklySchedule">;
-  date: string;
+type ScheduleEntry = {
+  _id: Id<"websiteSchedule">;
   dayOfWeek: string;
   startTime: string;
   endTime: string;
   className: string;
   categoryName: string;
-  instructorId: string;
   instructorName: string;
-  capacity: number;
-  status: string;
-}
+  displayOrder: number;
+  active: boolean;
+};
 
-interface ClassOption {
-  classId: string;
-  name: string;
-  categoryName: string;
-  durationMinutes: number;
-}
-
-interface InstructorOption {
-  instructorId: string;
-  displayName: string;
-  status: string;
+function to12Hour(time: string): string {
+  const [hStr, m] = time.split(":");
+  const h = Number(hStr);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return m === "00" ? `${hour12}${period}` : `${hour12}:${m}${period}`;
 }
 
 // ── page ───────────────────────────────────────────────────────────────────
 export default function WebsiteSchedulePage() {
   const { ready } = useRequireAdmin();
 
-  const slots = useQuery(api.queries.getWeeklySchedule) as SlotDoc[] | undefined;
-  const classesData = useQuery(api.queries.getClasses) as ClassOption[] | undefined;
-  const instructorsData = useQuery(api.queries.getInstructors) as InstructorOption[] | undefined;
+  const entries = useQuery(api.websiteContent.listWebsiteSchedule) as
+    | ScheduleEntry[]
+    | undefined;
 
-  const addSlot = useMutation(api.mutations.addScheduleSlot);
-  const updateSlot = useMutation(api.mutations.updateScheduleSlot);
-  const deleteSlot = useMutation(api.mutations.deleteScheduleSlot);
+  const createEntry = useMutation(api.websiteContent.createWebsiteScheduleEntry);
+  const updateEntry = useMutation(api.websiteContent.updateWebsiteScheduleEntry);
+  const deleteEntry = useMutation(api.websiteContent.deleteWebsiteScheduleEntry);
 
-  const [anchor, setAnchor] = useState<Date>(() => new Date());
-  const weekDates = useMemo(() => getWeekDates(anchor), [anchor]);
-  const [addState, setAddState] = useState<{ date: string; dayLabel: string } | null>(null);
-  const [editState, setEditState] = useState<SlotDoc | null>(null);
+  const [addState, setAddState] = useState<{ dayOfWeek: DayOfWeek } | null>(null);
+  const [editState, setEditState] = useState<ScheduleEntry | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
-  const slotsByDate = useMemo(() => {
-    const map: Record<string, SlotDoc[]> = {};
-    if (!slots) return map;
-    for (const s of slots) {
-      if (!map[s.date]) map[s.date] = [];
-      map[s.date].push(s);
+  const grouped = useMemo(() => {
+    const map: Record<string, ScheduleEntry[]> = {};
+    if (!entries) return map;
+    for (const e of entries) {
+      if (!map[e.dayOfWeek]) map[e.dayOfWeek] = [];
+      map[e.dayOfWeek].push(e);
     }
-    for (const key of Object.keys(map)) {
-      map[key].sort((a, b) => a.startTime.localeCompare(b.startTime));
+    for (const k of Object.keys(map)) {
+      map[k].sort((a, b) => a.startTime.localeCompare(b.startTime));
     }
     return map;
-  }, [slots]);
-
-  const activeInstructors = useMemo(
-    () => (instructorsData ?? []).filter((i) => i.status === "Active"),
-    [instructorsData],
-  );
-  const classes = classesData ?? [];
+  }, [entries]);
 
   function flash(type: "ok" | "err", text: string) {
     setStatusMsg({ type, text });
@@ -144,51 +84,37 @@ export default function WebsiteSchedulePage() {
   }
 
   async function handleAdd(data: {
-    date: string;
-    dayLabel: string;
-    classId: string;
-    className: string;
-    categoryName: string;
-    instructorId: string;
-    instructorName: string;
+    dayOfWeek: string;
     startTime: string;
     endTime: string;
-    capacity: number;
+    className: string;
+    categoryName: string;
+    instructorName: string;
+    displayOrder: number;
+    active: boolean;
   }) {
     try {
-      await addSlot({
-        date: data.date,
-        dayOfWeek: data.dayLabel,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        classId: data.classId,
-        className: data.className,
-        categoryName: data.categoryName,
-        instructorId: data.instructorId,
-        instructorName: data.instructorName,
-        capacity: data.capacity,
-        bufferOverrideAcknowledged: true,
-      });
+      await createEntry(data);
       setAddState(null);
-      flash("ok", `Added ${data.className} on ${formatDisplayDate(data.date)}.`);
+      flash("ok", `Added ${data.className} on ${data.dayOfWeek}.`);
     } catch (e) {
-      flash("err", (e as Error).message ?? "Failed to add slot.");
+      flash("err", (e as Error).message ?? "Failed to add entry.");
     }
   }
 
   async function handleUpdate(data: {
-    id: Id<"weeklySchedule">;
+    id: Id<"websiteSchedule">;
+    dayOfWeek: string;
     startTime: string;
     endTime: string;
     className: string;
     categoryName: string;
-    instructorId: string;
     instructorName: string;
-    capacity: number;
-    status: string;
+    displayOrder: number;
+    active: boolean;
   }) {
     try {
-      await updateSlot(data);
+      await updateEntry(data);
       setEditState(null);
       flash("ok", "Saved.");
     } catch (e) {
@@ -196,13 +122,13 @@ export default function WebsiteSchedulePage() {
     }
   }
 
-  async function handleDelete(id: Id<"weeklySchedule">) {
+  async function handleDelete(id: Id<"websiteSchedule">) {
     const yes = window.confirm(
-      "Delete this slot? This removes it from the staff schedule and from fiitco.ca.",
+      "Delete this slot? This removes it from fiitco.ca immediately.",
     );
     if (!yes) return;
     try {
-      await deleteSlot({ id });
+      await deleteEntry({ id });
       setEditState(null);
       flash("ok", "Deleted.");
     } catch (e) {
@@ -211,8 +137,7 @@ export default function WebsiteSchedulePage() {
   }
 
   if (!ready) return null;
-
-  const loading = slots === undefined || classesData === undefined || instructorsData === undefined;
+  const loading = entries === undefined;
 
   return (
     <div style={{ padding: "40px 48px", maxWidth: 1400, margin: "0 auto" }}>
@@ -225,39 +150,10 @@ export default function WebsiteSchedulePage() {
           Schedule
         </h1>
         <p style={{ fontSize: 15, color: "var(--text-muted)", maxWidth: 720, lineHeight: 1.55 }}>
-          Edits here flow straight to fiitco.ca/schedule. Shares the same table
-          as the ops <strong>Weekly Schedule</strong> page; use this view when
-          you&apos;re tuning what customers see. Delete removes the slot
-          everywhere.
+          Recurring weekly schedule shown on fiitco.ca. Edits appear on the
+          public site within seconds. Toggle a row inactive to hide it
+          without deleting; delete removes it everywhere.
         </p>
-      </div>
-
-      {/* Week nav */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, gap: 16, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button
-            type="button"
-            className="btn-ghost"
-            onClick={() => setAnchor(new Date(anchor.getTime() - 7 * 24 * 60 * 60 * 1000))}
-          >
-            ← Prev week
-          </button>
-          <button
-            type="button"
-            className="btn-ghost"
-            onClick={() => setAnchor(new Date())}
-          >
-            This week
-          </button>
-          <button
-            type="button"
-            className="btn-ghost"
-            onClick={() => setAnchor(new Date(anchor.getTime() + 7 * 24 * 60 * 60 * 1000))}
-          >
-            Next week →
-          </button>
-        </div>
-        <p style={{ fontSize: 15, fontWeight: 500 }}>{formatRange(weekDates)}</p>
       </div>
 
       {statusMsg && (
@@ -282,12 +178,11 @@ export default function WebsiteSchedulePage() {
           gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
           gap: 12,
         }}>
-          {weekDates.map((date, i) => {
-            const dayLabel = DAY_LABELS[i];
-            const todaySlots = slotsByDate[date] ?? [];
+          {DAYS_OF_WEEK.map((day) => {
+            const dayEntries = grouped[day] ?? [];
             return (
               <div
-                key={date}
+                key={day}
                 style={{
                   background: "var(--bg-card)",
                   border: "1px solid rgba(0,0,0,0.06)",
@@ -300,44 +195,49 @@ export default function WebsiteSchedulePage() {
               >
                 <div style={{ marginBottom: 8 }}>
                   <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>
-                    {dayLabel}
+                    {day.slice(0, 3)}
                   </p>
-                  <p style={{ fontSize: 15, fontWeight: 600 }}>{formatDisplayDate(date)}</p>
+                  <p style={{ fontSize: 15, fontWeight: 600 }}>{day}</p>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
-                  {todaySlots.map((slot) => (
+                  {dayEntries.map((entry) => (
                     <button
-                      key={slot._id}
+                      key={entry._id}
                       type="button"
-                      onClick={() => setEditState(slot)}
+                      onClick={() => setEditState(entry)}
                       style={{
                         textAlign: "left",
                         padding: "8px 10px",
                         borderRadius: 8,
                         border: "1px solid rgba(0,0,0,0.08)",
-                        background: slot.status === "Cancelled" ? "rgba(0,0,0,0.04)" : "white",
-                        opacity: slot.status === "Cancelled" ? 0.55 : 1,
+                        background: entry.active ? "white" : "rgba(0,0,0,0.04)",
+                        opacity: entry.active ? 1 : 0.55,
                         cursor: "pointer",
                         fontFamily: "inherit",
                       }}
                     >
                       <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 2 }}>
-                        {slot.startTime}–{slot.endTime}
+                        {to12Hour(entry.startTime)}–{to12Hour(entry.endTime)}
                       </p>
-                      <p style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.25, textDecoration: slot.status === "Cancelled" ? "line-through" : "none" }}>
-                        {slot.className}
+                      <p style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.25 }}>
+                        {entry.className}
                       </p>
                       <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-                        {slot.instructorName}
+                        {entry.instructorName}
                       </p>
+                      {!entry.active && (
+                        <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 4, fontStyle: "italic" }}>
+                          Hidden from site
+                        </p>
+                      )}
                     </button>
                   ))}
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setAddState({ date, dayLabel })}
+                  onClick={() => setAddState({ dayOfWeek: day })}
                   style={{
                     marginTop: 8,
                     padding: "6px 10px",
@@ -347,16 +247,8 @@ export default function WebsiteSchedulePage() {
                     color: "var(--text-muted)",
                     fontSize: 12,
                     fontWeight: 500,
-                    cursor: classes.length === 0 || activeInstructors.length === 0 ? "not-allowed" : "pointer",
+                    cursor: "pointer",
                   }}
-                  disabled={classes.length === 0 || activeInstructors.length === 0}
-                  title={
-                    classes.length === 0
-                      ? "Add a class in Class Library first"
-                      : activeInstructors.length === 0
-                        ? "Mark an instructor Active first"
-                        : "Add a slot"
-                  }
                 >
                   + Add slot
                 </button>
@@ -367,23 +259,38 @@ export default function WebsiteSchedulePage() {
       )}
 
       {addState && (
-        <AddSlotModal
-          date={addState.date}
-          dayLabel={addState.dayLabel}
-          classes={classes}
-          instructors={activeInstructors}
+        <EntryModal
+          mode="add"
+          initial={{
+            dayOfWeek: addState.dayOfWeek,
+            startTime: "09:00",
+            endTime: "10:00",
+            className: "",
+            categoryName: "",
+            instructorName: "",
+            displayOrder: 0,
+            active: true,
+          }}
           onClose={() => setAddState(null)}
-          onSave={(data) => handleAdd({ ...data, date: addState.date, dayLabel: addState.dayLabel })}
+          onSave={(data) => handleAdd(data)}
         />
       )}
 
       {editState && (
-        <EditSlotModal
-          slot={editState}
-          classes={classes}
-          instructors={activeInstructors}
+        <EntryModal
+          mode="edit"
+          initial={{
+            dayOfWeek: editState.dayOfWeek,
+            startTime: editState.startTime,
+            endTime: editState.endTime,
+            className: editState.className,
+            categoryName: editState.categoryName,
+            instructorName: editState.instructorName,
+            displayOrder: editState.displayOrder,
+            active: editState.active,
+          }}
           onClose={() => setEditState(null)}
-          onSave={handleUpdate}
+          onSave={(data) => handleUpdate({ id: editState._id, ...data })}
           onDelete={() => handleDelete(editState._id)}
         />
       )}
@@ -391,265 +298,154 @@ export default function WebsiteSchedulePage() {
   );
 }
 
-// ── Add modal ──────────────────────────────────────────────────────────────
-function AddSlotModal({
-  date,
-  dayLabel,
-  classes,
-  instructors,
-  onClose,
-  onSave,
-}: {
-  date: string;
-  dayLabel: string;
-  classes: ClassOption[];
-  instructors: InstructorOption[];
-  onClose: () => void;
-  onSave: (data: {
-    classId: string;
-    className: string;
-    categoryName: string;
-    instructorId: string;
-    instructorName: string;
-    startTime: string;
-    endTime: string;
-    capacity: number;
-  }) => void;
-}) {
-  const [classId, setClassId] = useState(classes[0]?.classId ?? "");
-  const [instructorId, setInstructorId] = useState(instructors[0]?.instructorId ?? "");
-  const [startTime, setStartTime] = useState("09:00");
-  const [capacity, setCapacity] = useState(20);
+// ── Add / Edit modal ──────────────────────────────────────────────────────
+type Form = {
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  className: string;
+  categoryName: string;
+  instructorName: string;
+  displayOrder: number;
+  active: boolean;
+};
 
-  const selectedClass = classes.find((c) => c.classId === classId);
-  const endTime = selectedClass ? addMinutes(startTime, selectedClass.durationMinutes) : startTime;
-
-  function handleSave() {
-    if (!selectedClass) return;
-    const ins = instructors.find((i) => i.instructorId === instructorId);
-    onSave({
-      classId,
-      className: selectedClass.name,
-      categoryName: selectedClass.categoryName,
-      instructorId,
-      instructorName: ins?.displayName ?? "",
-      startTime,
-      endTime,
-      capacity,
-    });
-  }
-
-  return (
-    <div className="modal-overlay">
-      <div className="modal-panel">
-        <ModalHeader title="Add class slot" subtitle={`${dayLabel} — ${formatDisplayDate(date)}`} onClose={onClose} />
-        <SlotForm
-          classId={classId}
-          setClassId={setClassId}
-          instructorId={instructorId}
-          setInstructorId={setInstructorId}
-          startTime={startTime}
-          setStartTime={setStartTime}
-          endTime={endTime}
-          capacity={capacity}
-          setCapacity={setCapacity}
-          classes={classes}
-          instructors={instructors}
-        />
-        <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-          <button type="button" className="btn-ghost" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
-          <button type="button" className="btn-primary" style={{ flex: 1 }} onClick={handleSave}>Add to schedule</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Edit modal ─────────────────────────────────────────────────────────────
-function EditSlotModal({
-  slot,
-  classes,
-  instructors,
+function EntryModal({
+  mode,
+  initial,
   onClose,
   onSave,
   onDelete,
 }: {
-  slot: SlotDoc;
-  classes: ClassOption[];
-  instructors: InstructorOption[];
+  mode: "add" | "edit";
+  initial: Form;
   onClose: () => void;
-  onSave: (data: {
-    id: Id<"weeklySchedule">;
-    startTime: string;
-    endTime: string;
-    className: string;
-    categoryName: string;
-    instructorId: string;
-    instructorName: string;
-    capacity: number;
-    status: string;
-  }) => void;
-  onDelete: () => void;
+  onSave: (data: Form) => void;
+  onDelete?: () => void;
 }) {
-  const initialClass = classes.find((c) => c.name === slot.className) ?? classes[0];
-  const [classId, setClassId] = useState(initialClass?.classId ?? "");
-  const [instructorId, setInstructorId] = useState(slot.instructorId || instructors[0]?.instructorId || "");
-  const [startTime, setStartTime] = useState(slot.startTime);
-  const [capacity, setCapacity] = useState(slot.capacity);
-  const [status, setStatus] = useState<string>(STATUS_OPTIONS.includes(slot.status as (typeof STATUS_OPTIONS)[number]) ? slot.status : "Scheduled");
+  const [f, setF] = useState<Form>(initial);
+  const s: React.CSSProperties = { display: "flex", flexDirection: "column", gap: 6 };
 
-  const selectedClass = classes.find((c) => c.classId === classId);
-  const endTime = selectedClass ? addMinutes(startTime, selectedClass.durationMinutes) : slot.endTime;
-
-  function handleSave() {
-    if (!selectedClass) return;
-    const ins = instructors.find((i) => i.instructorId === instructorId);
-    onSave({
-      id: slot._id,
-      startTime,
-      endTime,
-      className: selectedClass.name,
-      categoryName: selectedClass.categoryName,
-      instructorId,
-      instructorName: ins?.displayName ?? slot.instructorName,
-      capacity,
-      status,
-    });
+  function set<K extends keyof Form>(k: K, v: Form[K]) {
+    setF((prev) => ({ ...prev, [k]: v }));
   }
+
+  const canSave = f.className.trim() && f.instructorName.trim() && f.startTime < f.endTime;
 
   return (
     <div className="modal-overlay">
       <div className="modal-panel">
-        <ModalHeader title="Edit class slot" subtitle={`${slot.dayOfWeek} — ${formatDisplayDate(slot.date)}`} onClose={onClose} />
-        <SlotForm
-          classId={classId}
-          setClassId={setClassId}
-          instructorId={instructorId}
-          setInstructorId={setInstructorId}
-          startTime={startTime}
-          setStartTime={setStartTime}
-          endTime={endTime}
-          capacity={capacity}
-          setCapacity={setCapacity}
-          classes={classes}
-          instructors={instructors}
-        />
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 16 }}>
-          <label className="field-label">Status</label>
-          <select className="field-input" value={status} onChange={(e) => setStatus(e.target.value)}>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-            Cancelled slots stay in the ops schedule but are hidden on fiitco.ca.
-          </p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+          <div>
+            <h2 className="font-serif" style={{ fontSize: 22, fontWeight: 500 }}>
+              {mode === "add" ? "Add schedule entry" : "Edit schedule entry"}
+            </h2>
+            <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>
+              Recurring weekly — shows on fiitco.ca immediately
+            </p>
+          </div>
+          <button type="button" onClick={onClose} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "var(--text-muted)", lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={s}>
+            <label className="field-label">Day of week</label>
+            <select className="field-input" value={f.dayOfWeek} onChange={(e) => set("dayOfWeek", e.target.value)}>
+              {DAYS_OF_WEEK.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={s}>
+              <label className="field-label">Start time</label>
+              <input type="time" className="field-input" value={f.startTime} onChange={(e) => set("startTime", e.target.value)} />
+            </div>
+            <div style={s}>
+              <label className="field-label">End time</label>
+              <input type="time" className="field-input" value={f.endTime} onChange={(e) => set("endTime", e.target.value)} />
+            </div>
+          </div>
+
+          <div style={s}>
+            <label className="field-label">Class name</label>
+            <input
+              type="text"
+              className="field-input"
+              placeholder="e.g. FIIT Hybrid"
+              value={f.className}
+              onChange={(e) => set("className", e.target.value)}
+            />
+          </div>
+
+          <div style={s}>
+            <label className="field-label">Category</label>
+            <input
+              type="text"
+              className="field-input"
+              placeholder="e.g. Hybrid, Boxing, Strength"
+              value={f.categoryName}
+              onChange={(e) => set("categoryName", e.target.value)}
+            />
+          </div>
+
+          <div style={s}>
+            <label className="field-label">Instructor name</label>
+            <input
+              type="text"
+              className="field-input"
+              placeholder="Shown on the card"
+              value={f.instructorName}
+              onChange={(e) => set("instructorName", e.target.value)}
+            />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, alignItems: "end" }}>
+            <div style={s}>
+              <label className="field-label">Display order</label>
+              <input
+                type="number"
+                className="field-input"
+                value={f.displayOrder}
+                onChange={(e) => set("displayOrder", Number(e.target.value))}
+              />
+            </div>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", paddingBottom: 10 }}>
+              <input type="checkbox" checked={f.active} onChange={(e) => set("active", e.target.checked)} />
+              <span style={{ fontSize: 14, fontWeight: 500 }}>Active (visible on fiitco.ca)</span>
+            </label>
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
           <button type="button" className="btn-ghost" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
+          {mode === "edit" && onDelete && (
+            <button
+              type="button"
+              style={{
+                flex: 1,
+                padding: "10px 16px",
+                borderRadius: "var(--radius-pill)",
+                border: "1px solid #D32F2F",
+                background: "transparent",
+                color: "#D32F2F",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+              onClick={onDelete}
+            >
+              Delete
+            </button>
+          )}
           <button
             type="button"
-            style={{
-              flex: 1,
-              padding: "10px 16px",
-              borderRadius: "var(--radius-pill)",
-              border: "1px solid #D32F2F",
-              background: "transparent",
-              color: "#D32F2F",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-            onClick={onDelete}
+            className="btn-primary"
+            style={{ flex: 1 }}
+            disabled={!canSave}
+            onClick={() => canSave && onSave(f)}
           >
-            Delete
+            {mode === "add" ? "Add" : "Save"}
           </button>
-          <button type="button" className="btn-primary" style={{ flex: 1 }} onClick={handleSave}>Save</button>
         </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Shared bits ────────────────────────────────────────────────────────────
-function ModalHeader({ title, subtitle, onClose }: { title: string; subtitle: string; onClose: () => void }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-      <div>
-        <h2 className="font-serif" style={{ fontSize: 22, fontWeight: 500 }}>{title}</h2>
-        <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>{subtitle}</p>
-      </div>
-      <button type="button" onClick={onClose} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "var(--text-muted)", lineHeight: 1 }}>×</button>
-    </div>
-  );
-}
-
-function SlotForm({
-  classId,
-  setClassId,
-  instructorId,
-  setInstructorId,
-  startTime,
-  setStartTime,
-  endTime,
-  capacity,
-  setCapacity,
-  classes,
-  instructors,
-}: {
-  classId: string;
-  setClassId: (v: string) => void;
-  instructorId: string;
-  setInstructorId: (v: string) => void;
-  startTime: string;
-  setStartTime: (v: string) => void;
-  endTime: string;
-  capacity: number;
-  setCapacity: (v: number) => void;
-  classes: ClassOption[];
-  instructors: InstructorOption[];
-}) {
-  const s: React.CSSProperties = { display: "flex", flexDirection: "column", gap: 6 };
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={s}>
-        <label className="field-label">Class</label>
-        <select className="field-input" value={classId} onChange={(e) => setClassId(e.target.value)}>
-          {classes.map((c) => (
-            <option key={c.classId} value={c.classId}>
-              {c.name} ({c.categoryName}) — {c.durationMinutes} min
-            </option>
-          ))}
-        </select>
-      </div>
-      <div style={s}>
-        <label className="field-label">Instructor</label>
-        <select className="field-input" value={instructorId} onChange={(e) => setInstructorId(e.target.value)}>
-          {instructors.map((i) => (
-            <option key={i.instructorId} value={i.instructorId}>{i.displayName}</option>
-          ))}
-        </select>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div style={s}>
-          <label className="field-label">Start time</label>
-          <input type="time" className="field-input" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-        </div>
-        <div style={s}>
-          <label className="field-label">End time (auto)</label>
-          <input type="time" className="field-input" value={endTime} readOnly />
-        </div>
-      </div>
-      <div style={s}>
-        <label className="field-label">Capacity</label>
-        <input
-          type="number"
-          min={1}
-          max={100}
-          className="field-input"
-          value={capacity}
-          onChange={(e) => setCapacity(Number(e.target.value))}
-        />
       </div>
     </div>
   );

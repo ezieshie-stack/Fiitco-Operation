@@ -1347,3 +1347,97 @@ export const deleteLegalDoc = adminMutation({
     return { deleted: !!existing };
   },
 });
+
+// ──────────────────────────────────────────────────────────────────────────
+// WEBSITE SCHEDULE — recurring weekly class template rendered on
+// fiitco.ca's "FIIT Co Schedule" homepage section. Deliberately separate
+// from the ops `weeklySchedule` table (which is date-specific calendar
+// entries for attendance / delivery logs); the two serve different
+// purposes and have different edit cadences.
+// ──────────────────────────────────────────────────────────────────────────
+
+/** Admin list — includes inactive rows for the staff editor UI. */
+export const listWebsiteSchedule = adminQuery({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("websiteSchedule").collect();
+    return [...all].sort((a, b) => {
+      // Primary sort: day of week in calendar order.
+      const order = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+      const da = order.indexOf(a.dayOfWeek);
+      const db = order.indexOf(b.dayOfWeek);
+      if (da !== db) return da - db;
+      // Secondary: start time.
+      if (a.startTime !== b.startTime) return a.startTime.localeCompare(b.startTime);
+      // Tertiary: display order.
+      return a.displayOrder - b.displayOrder;
+    });
+  },
+});
+
+/** PUBLIC: customer site reads this to render the schedule section. */
+export const listActiveWebsiteSchedule = query({
+  args: {},
+  handler: async (ctx) => {
+    const active = await ctx.db
+      .query("websiteSchedule")
+      .withIndex("by_active_displayOrder", (q) => q.eq("active", true))
+      .collect();
+    return [...active].sort((a, b) => {
+      if (a.startTime !== b.startTime) return a.startTime.localeCompare(b.startTime);
+      return a.displayOrder - b.displayOrder;
+    });
+  },
+});
+
+export const createWebsiteScheduleEntry = adminMutation({
+  args: {
+    dayOfWeek: v.string(),
+    startTime: v.string(),
+    endTime: v.string(),
+    className: v.string(),
+    categoryName: v.string(),
+    instructorName: v.string(),
+    displayOrder: v.number(),
+    active: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("websiteSchedule", {
+      ...args,
+      updatedAt: new Date().toISOString(),
+    });
+  },
+});
+
+export const updateWebsiteScheduleEntry = adminMutation({
+  args: {
+    id: v.id("websiteSchedule"),
+    dayOfWeek: v.optional(v.string()),
+    startTime: v.optional(v.string()),
+    endTime: v.optional(v.string()),
+    className: v.optional(v.string()),
+    categoryName: v.optional(v.string()),
+    instructorName: v.optional(v.string()),
+    displayOrder: v.optional(v.number()),
+    active: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    // Strip undefined keys so patch doesn't overwrite with null.
+    const patch: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+    for (const [k, v] of Object.entries(fields)) {
+      if (v !== undefined) patch[k] = v;
+    }
+    await ctx.db.patch(id, patch);
+    return id;
+  },
+});
+
+/** Hard delete — mirror of /website-schedule's current delete behavior. */
+export const deleteWebsiteScheduleEntry = adminMutation({
+  args: { id: v.id("websiteSchedule") },
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id);
+    return id;
+  },
+});

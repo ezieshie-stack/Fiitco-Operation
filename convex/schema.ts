@@ -457,6 +457,29 @@ export default defineSchema({
     .index("by_group_page_displayOrder", ["group", "page", "displayOrder"])
     .index("by_active_slot", ["active", "slot"]),
 
+  // Recurring weekly schedule shown on fiitco.ca's "FIIT Co Schedule"
+  // section. One row per class slot per day of week — a template that
+  // repeats forever, independent of specific calendar dates. Managed from
+  // the staff portal at /website-schedule and read by the customer site
+  // via listActiveWebsiteSchedule (public query).
+  //
+  // Deliberately separate from the ops `weeklySchedule` table (which is
+  // date-specific calendar entries used for attendance / delivery logs);
+  // the two serve different purposes and have different edit cadences.
+  websiteSchedule: defineTable({
+    dayOfWeek: v.string(),           // "Monday" | ... | "Sunday"
+    startTime: v.string(),           // "HH:MM" 24h
+    endTime: v.string(),
+    className: v.string(),
+    categoryName: v.string(),        // for category chip / colour on the card
+    instructorName: v.string(),      // display name shown on the card
+    displayOrder: v.number(),        // tie-breaker for same start time
+    active: v.boolean(),             // false hides the row without deleting
+    updatedAt: v.string(),           // ISO
+  })
+    .index("by_active_displayOrder", ["active", "displayOrder"])
+    .index("by_dayOfWeek", ["dayOfWeek"]),
+
   // Short-lived tokens for email-based password reset. Inserted when any
   // user hits "Forgot password". Link expires 15 minutes after creation and
   // is single-use (marked `used: true` after the new password is saved).
